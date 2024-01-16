@@ -1,9 +1,13 @@
 // ==UserScript==
 // @name         MusicBrainz Bandcamp Tag Importer
-// @namespace    http://tampermonkey.net/
-// @version      2024-01-15_1
+// @namespace    https://github.com/zabe40
+// @version      2024-01-15_2
 // @description  Easily submit tags on Bandcamp pages to Musicbrainz
 // @author       zabe
+// @homepage     https://github.com/zabe40/musicbrainz-userscripts
+// @updateURL    https://raw.github.com/zabe40/musicbrainz-userscripts/main/bandcamp-tag-importer.user.js
+// @downloadURL  https://raw.github.com/zabe40/musicbrainz-userscripts/main/bandcamp-tag-importer.user.js
+// @supportURL   https://github.com/zabe40/musicbrainz-userscripts/issues
 // @match        https://musicbrainz.org/release/*
 // @connect      bandcamp.com
 // @grant        GM.xmlHttpRequest
