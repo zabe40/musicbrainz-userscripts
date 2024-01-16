@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MusicBrainz Bandcamp Tag Importer
 // @namespace    https://github.com/zabe40
-// @version      2024-01-15_3
+// @version      2024-01-16
 // @description  Easily submit tags on Bandcamp pages to Musicbrainz
 // @author       zabe
 // @homepage     https://github.com/zabe40/musicbrainz-userscripts
@@ -26,11 +26,19 @@
 		const parser = new DOMParser();
 		let doc = parser.parseFromString(html, "text/html");
 		const input = document.querySelector(".tag-input");
-		doc.querySelectorAll("a.tag").forEach((currentAnchor) => {
-		    if(input.value != ""){
-			input.value += ",";
+		doc.querySelectorAll("a.tag").forEach((currentAnchor, currentIndex, listObj) => {
+		    // on Bandcamp the last tag on an album is a tag
+		    // of the city in the artist's profile. this
+		    // information is often innaccurate (in the case
+		    // of labels with Bandcamp pages) or outdated, and
+		    // regardless the information is better
+		    // represented via a relationship of some sort
+		    if(currentIndex != listObj.length - 1){
+			if(input.value != ""){
+			    input.value += ",";
+			}
+			input.value += currentAnchor.innerHTML;
 		    }
-		    input.value += currentAnchor.innerHTML;
 		})
 	    });
     }
