@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MusicBrainz Bandcamp Tag Importer
 // @namespace    https://github.com/zabe40
-// @version      2024-01-16_1
+// @version      2024-01-16_2
 // @description  Easily submit tags on Bandcamp pages to Musicbrainz
 // @author       zabe
 // @homepage     https://github.com/zabe40/musicbrainz-userscripts
@@ -34,15 +34,15 @@
 		    // regardless the information is better
 		    // represented via a relationship of some sort
 		    if(currentIndex != listObj.length - 1){
-			if(currentAnchor.innerHTML.includes(",")){
+			if(currentAnchor.innerText.includes(",")){
 			    // Bandcamp tags can have commas, MusicBrainz tags cannot
 			    // see https://bandcamp.com/discover/,
-			    alert("The tag ${currentAnchor.innerHTML} includes a comma, which cannot be part of a tag.\nFor more information, see https://musicbrainz.org/doc/Folksonomy_Tagging.");
+			    alert("The tag ${currentAnchor.innerText} includes a comma, which cannot be part of a tag.\nFor more information, see https://musicbrainz.org/doc/Folksonomy_Tagging.");
 			}
 			if(input.value != ""){
 			    input.value += ",";
 			}
-			input.value += currentAnchor.innerHTML;
+			input.value += currentAnchor.innerText;
 		    }
 		})
 	    });
