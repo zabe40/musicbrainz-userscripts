@@ -1,36 +1,28 @@
 // ==UserScript==
 // @name         MusicBrainz Bandcamp Tag Importer
 // @namespace    http://tampermonkey.net/
-// @version      2024-01-15
+// @version      2024-01-15_1
 // @description  Easily submit tags on Bandcamp pages to Musicbrainz
 // @author       zabe
-// @match        https://musicbrainz.org/release/
-// @grant        none
+// @match        https://musicbrainz.org/release/*
+// @connect      bandcamp.com
+// @grant        GM.xmlHttpRequest
 // ==/UserScript==
 
 (function() {
     'use strict';
     function importTags(url){
-	let headers = new Headers();
-	headers.append("Access-Control-Allow-Origin", "https://musicbrainz.org");
-	headers.append("Referrer-Policy", "");
-	const init = {
-	    headers: headers,
-	    mode: "cors",
-	    credentials: "omit"
-	};
-	const bandcampRequest = new Request(url);
-	fetch(bandcampRequest, init)
+	GM.xmlHttpRequest({ url: url})
 	    .then((response) => {
-		if(!response.ok){
-		    throw new Error(`HTTP error! Status: ${response.status}`);
+		if((200 <= response.status) && (response.status <= 299)){
+		    return response.responseText;
 		}
-		return response.text();
+		throw new Error(`HTTP error! Status: ${response.status}`);
 	    }).then((html) => {
 		const parser = new DOMParser();
 		let doc = parser.parseFromString(html, "text/html");
+		const input = document.querySelector(".tag-input");
 		doc.querySelectorAll("a.tag").forEach((currentAnchor) => {
-		    const input = document.querySelector(".tag-input").value;
 		    if(input.value != ""){
 			input.value += ",";
 		    }
