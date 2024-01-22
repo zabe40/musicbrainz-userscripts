@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         MusicBrainz Youtube Link Canonicalizer
 // @namespace    https://github.com/zabe40
-// @version      2024-01-22
+// @version      2024-01-22_1
 // @description  Correct youtube @username artist links to channel IDs
 // @author       zabe
 // @homepage     https://github.com/zabe40/musicbrainz-userscripts
+// @updateURL    https://raw.github.com/zabe40/musicbrainz-userscripts/main/youtube-link-canonicalizer.user.js
+// @downloadURL  https://raw.github.com/zabe40/musicbrainz-userscripts/main/youtube-link-canonicalizer.user.js
 // @supportURL   https://github.com/zabe40/musicbrainz-userscripts/issues
 // @match        *://*.musicbrainz.org/artist/*/edit
 // @connect      youtube.com
