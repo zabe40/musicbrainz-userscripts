@@ -1,0 +1,24 @@
+{
+    "name": "@zabe40/musicbrainz-userscripts",
+    "version": "0.0.1",
+    "author": "Zabe",
+    "description": "My Userscripts for MusicBrainz",
+    "homepage": "https://github.com/zabe40/musicbrainz-userscripts",
+    "repository": {
+	"type": "git",
+	"url": "https://github.com/zabe40/musicbrainz-userscripts.git"
+    },
+    "type": "module",
+    "scripts": {
+	"build": "node build.js"
+    },
+    "files": [
+	"src/*.js"
+    ],
+    "devDependencies": {
+	"@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler"
+    },
+    "dependencies": {
+	"@kellnerd/es-utils": "github:kellnerd/es-utils"
+    }
+}

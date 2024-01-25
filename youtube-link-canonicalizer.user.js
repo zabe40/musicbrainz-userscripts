@@ -1,17 +1,22 @@
 // ==UserScript==
 // @name         MusicBrainz Youtube Link Canonicalizer
 // @namespace    https://github.com/zabe40
-// @version      2024-01-22_1
+// @version      2024-01-25
 // @description  Correct youtube @username artist links to channel IDs
 // @author       zabe
 // @homepage     https://github.com/zabe40/musicbrainz-userscripts
-// @updateURL    https://raw.github.com/zabe40/musicbrainz-userscripts/main/youtube-link-canonicalizer.user.js
-// @downloadURL  https://raw.github.com/zabe40/musicbrainz-userscripts/main/youtube-link-canonicalizer.user.js
+// @updateURL    https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/youtube-link-canonicalizer.user.js
+// @downloadURL  https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/youtube-link-canonicalizer.user.js
 // @supportURL   https://github.com/zabe40/musicbrainz-userscripts/issues
 // @match        *://*.musicbrainz.org/artist/*/edit
 // @connect      youtube.com
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
+
+// THIS USERSCRIPT IS OUTDATED!!!!!
+//
+// To install the most up-to-date version of this userscript see the
+// new @updateURL or install from README.md
 
 (function() {
     'use strict';
