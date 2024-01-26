@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-01-25_1
+// @version       2024-01-25_2
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -15,8 +15,36 @@
 (function () {
 	'use strict';
 
+	// Adapted from https://stackoverflow.com/a/46012210
+
+	const nativeInputValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+
+	/**
+	 * Sets the value of an input element which has been manipulated by React.
+	 * @param {HTMLInputElement} input 
+	 * @param {string} value 
+	 */
+	function setReactInputValue(input, value) {
+		nativeInputValueSetter.call(input, value);
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+	}
+
+	Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+
 	function fixLink(span){
 	    const tableRow = span.parentElement.parentElement;
+	    const observer = new MutationObserver(function(mutations, observer){
+		mutations.forEach(function(mutation){
+		    if(mutation.addedNodes.length > 0
+		       && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
+			setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), tableRow.getAttribute("newLink"));
+			document.querySelector("div.dialog-content button.positive").click();
+			observer.disconnect();
+		    }
+		});
+	    });
+	    observer.observe(document.querySelector("#url-input-popover-root") || document.body,
+			     { childList: true});
 	    if(tableRow.getAttribute("newLink")){
 		tableRow.querySelector("td.link-actions > button.edit-item").click();
 		return;
@@ -30,32 +58,7 @@
 		    const html = response.responseText;
 		    const parser = new DOMParser();
 		    let doc = parser.parseFromString(html, "text/html");
-		    const newLink = doc.querySelector("link[rel=\"canonical\"]").href;
-		    tableRow.setAttribute("newLink", newLink);
-		    const observer = new MutationObserver(function(mutations){
-			mutations.forEach(function(mutation){
-			    console.log(mutation);
-			    if(mutation.addedNodes.length > 0
-			       && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
-				setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), newLink);
-				// document.querySelector("div.dialog-content button.positive").click();
-
-				// this second observer is needed to catch dialog popups after the first one
-				const observer = new MutationObserver(function(mutations){
-				    mutations.forEach(function(mutation){
-					console.log(mutation);
-					if(mutation.addedNodes.length > 0
-					   && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
-					    setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), newLink);
-					    // document.querySelector("div.dialog-content button.positive").click();
-					}
-				    });
-				});
-				observer.observe(document.querySelector("#url-input-popover-root"), { childList: true});
-			    }
-			});
-		    });
-		    observer.observe(document.body, { childList: true});
+		    tableRow.setAttribute("newLink", doc.querySelector("link[rel=\"canonical\"]").href);
 		    tableRow.querySelector("td.link-actions > button.edit-item").click();
 		}});
 	}

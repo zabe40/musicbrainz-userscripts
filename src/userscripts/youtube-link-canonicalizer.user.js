@@ -1,5 +1,19 @@
+import { setReactInputValue} from '@kellnerd/es-utils/dom/react.js';
+
 function fixLink(span){
     const tableRow = span.parentElement.parentElement;
+    const observer = new MutationObserver(function(mutations, observer){
+	mutations.forEach(function(mutation){
+	    if(mutation.addedNodes.length > 0
+	       && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
+		setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), tableRow.getAttribute("newLink"));
+		document.querySelector("div.dialog-content button.positive").click();
+		observer.disconnect();
+	    }
+	});
+    });
+    observer.observe(document.querySelector("#url-input-popover-root") || document.body,
+		     { childList: true});
     if(tableRow.getAttribute("newLink")){
 	tableRow.querySelector("td.link-actions > button.edit-item").click();
 	return;
@@ -13,32 +27,7 @@ function fixLink(span){
 	    const html = response.responseText;
 	    const parser = new DOMParser();
 	    let doc = parser.parseFromString(html, "text/html");
-	    const newLink = doc.querySelector("link[rel=\"canonical\"]").href;
-	    tableRow.setAttribute("newLink", newLink);
-	    const observer = new MutationObserver(function(mutations){
-		mutations.forEach(function(mutation){
-		    console.log(mutation);
-		    if(mutation.addedNodes.length > 0
-		       && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
-			setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), newLink)
-			// document.querySelector("div.dialog-content button.positive").click();
-
-			// this second observer is needed to catch dialog popups after the first one
-			const observer = new MutationObserver(function(mutations){
-			    mutations.forEach(function(mutation){
-				console.log(mutation);
-				if(mutation.addedNodes.length > 0
-				   && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
-				    setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), newLink)
-				    // document.querySelector("div.dialog-content button.positive").click();
-				}
-			    });
-			});
-			observer.observe(document.querySelector("#url-input-popover-root"), { childList: true});
-		    }
-		});
-	    });
-	    observer.observe(document.body, { childList: true});
+	    tableRow.setAttribute("newLink", doc.querySelector("link[rel=\"canonical\"]").href);
 	    tableRow.querySelector("td.link-actions > button.edit-item").click();
 	}});
 }
