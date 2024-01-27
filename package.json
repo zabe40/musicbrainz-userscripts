@@ -19,6 +19,7 @@
 	"@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler"
     },
     "dependencies": {
-	"@kellnerd/es-utils": "github:kellnerd/es-utils"
+	"@kellnerd/es-utils": "github:kellnerd/es-utils",
+	"@kellnerd/musicbrainz-scripts": "github:kellnerd/musicbrainz-scripts"
     }
 }

@@ -1,4 +1,5 @@
 import { setReactInputValue} from '@kellnerd/es-utils/dom/react.js';
+import { addMessageToEditNote} from '@kellnerd/musicbrainz-scripts/src/editNote.js';
 
 function fixLink(span){
     const tableRow = span.parentElement.parentElement;
@@ -9,6 +10,9 @@ function fixLink(span){
 		setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), tableRow.getAttribute("newLink"));
 		document.querySelector("div.dialog-content button.positive").click();
 		observer.disconnect();
+		addMessageToEditNote(tableRow.getAttribute("oldLink")
+				     + " → "
+				     + tableRow.getAttribute("newLink"));
 	    }
 	});
     });
@@ -27,6 +31,7 @@ function fixLink(span){
 	    const html = response.responseText;
 	    const parser = new DOMParser();
 	    let doc = parser.parseFromString(html, "text/html");
+	    tableRow.setAttribute("oldLink", tableRow.querySelector("td > a").href);
 	    tableRow.setAttribute("newLink", doc.querySelector("link[rel=\"canonical\"]").href);
 	    tableRow.querySelector("td.link-actions > button.edit-item").click();
 	}});
