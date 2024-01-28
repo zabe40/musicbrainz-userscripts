@@ -54,24 +54,35 @@ function addFixerUpperButton(currentSpan){
     td.appendChild(button);
     currentSpan.parentElement.parentElement.appendChild(td);
 }
-const target = document.querySelector("#external-links-editor-container");
-const observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(mutation){
-	if(mutation.addedNodes.length > 0
-	   && (mutation.addedNodes.item(0).id == "external-links-editor"
-	       || (mutation.addedNodes.item(0).classList.contains("url")
-		   && mutation.addedNodes.item(0).href.match("^https?://(www\\.)?youtube\\.com")))){
-	    document.querySelectorAll(".youtube-favicon")
-		.forEach(addFixerUpperButton);
-	}
-	if(mutation.removedNodes.length > 0
-	   && mutation.removedNodes.item(0).nodeName !== "#text"
-	   && mutation.removedNodes.item(0).classList.contains("url")){
-	    mutation.target.nextElementSibling.remove();
-	    mutation.target.parentElement.removeAttribute("oldLink");
-	    mutation.target.parentElement.removeAttribute("newLink")
-	}
+function runUserscript(){
+    const target = document.querySelector("#external-links-editor-container");
+    const observer = new MutationObserver(function(mutations){
+	mutations.forEach(function(mutation){
+	    if(mutation.addedNodes.length > 0
+	       && (mutation.addedNodes.item(0).id == "external-links-editor"
+		   || (mutation.addedNodes.item(0).classList.contains("url")
+		       && mutation.addedNodes.item(0).href.match("^https?://(www\\.)?youtube\\.com")))){
+		document.querySelectorAll(".youtube-favicon")
+		    .forEach(addFixerUpperButton);
+	    }
+	    if(mutation.removedNodes.length > 0
+	       && mutation.removedNodes.item(0).nodeName !== "#text"
+	       && mutation.removedNodes.item(0).classList.contains("url")){
+		mutation.target.nextElementSibling.remove();
+		mutation.target.parentElement.removeAttribute("oldLink");
+		mutation.target.parentElement.removeAttribute("newLink")
+	    }
+	})
     })
-})
-observer.observe(target, { childList: true, subtree:true});
+    observer.observe(target, { childList: true, subtree:true});
+}
 
+if(document.location.href
+   .match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
+    if((new URLSearchParams(document.location.search))
+       .get("path").match("^/artist/create")){
+	runUserscript();
+    }
+}else{
+    runUserscript();
+}
