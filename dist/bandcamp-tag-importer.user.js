@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Bandcamp Tag Importer
-// @version       2024-01-25_1
+// @version       2024-01-28
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags on Bandcamp pages to Musicbrainz
@@ -18,6 +18,15 @@
 	function importTags(url, button){
 	    GM_xmlhttpRequest({
 		url: url,
+		onabort: function(){
+		    button.disabled = false;
+		},
+		onerror: function(){
+		    button.disabled = false;
+		},
+		ontimeout: function(){
+		    button.disabled = false;
+		},
 		onload: function(response){
 		    if(!((200 <= response.status) && (response.status <= 299))){
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -46,14 +55,16 @@
 				input.value += currentAnchor.innerText;
 			    }
 			});
+		    button.disabled = false;
 		    input.focus();
 		}
 	    });
+	    button.disabled = true;
 	}
 
 	function addImportTagsButton(currentAnchor, _currentIndex, _listObj){
 	    let importButton = document.createElement('button');
-	    importButton.addEventListener("click", (function(){importTags(currentAnchor.href);}));
+	    importButton.addEventListener("click", (function(){importTags(currentAnchor.href, importButton);}));
 	    importButton.type = 'button';
 	    importButton.innerHTML = "Tag";
 	    importButton.className = 'styled-button';

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-01-27_2
+// @version       2024-01-28
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -107,6 +107,15 @@
 	    }
 	    GM_xmlhttpRequest({
 		url: tableRow.querySelector("td > a").href,
+		onabort: function(){
+		    tableRow.querySelector(".canonicalizer-button").disabled = false;
+		},
+		onerror: function(){
+		    tableRow.querySelector(".canonicalizer-button").disabled = false;
+		},
+		ontimeout: function(){
+		    tableRow.querySelector(".canonicalizer-button").disabled = false;
+		},
 		onload: function(response){
 		    if(!((200 <= response.status) && (response.status <= 299))){
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -117,7 +126,9 @@
 		    tableRow.setAttribute("oldLink", tableRow.querySelector("td > a").href);
 		    tableRow.setAttribute("newLink", doc.querySelector("link[rel=\"canonical\"]").href);
 		    tableRow.querySelector("td.link-actions > button.edit-item").click();
+		    tableRow.querySelector(".canonicalizer-button").disabled = false;
 		}});
+	    tableRow.querySelector(".canonicalizer-button").disabled = true;
 	}
 	function addFixerUpperButton(currentSpan){
 	    const tableRow = currentSpan.parentElement.parentElement;

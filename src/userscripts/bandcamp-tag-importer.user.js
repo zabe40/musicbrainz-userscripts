@@ -1,6 +1,15 @@
 function importTags(url, button){
     GM_xmlhttpRequest({
 	url: url,
+	onabort: function(){
+	    button.disabled = false;
+	},
+	onerror: function(){
+	    button.disabled = false;
+	},
+	ontimeout: function(){
+	    button.disabled = false;
+	},
 	onload: function(response){
 	    if(!((200 <= response.status) && (response.status <= 299))){
 		throw new Error(`HTTP error! Status: ${response.status}`);
@@ -29,9 +38,11 @@ function importTags(url, button){
 			input.value += currentAnchor.innerText;
 		    }
 		});
+	    button.disabled = false;
 	    input.focus();
 	}
     });
+    button.disabled = true;
 }
 
 function addImportTagsButton(currentAnchor, _currentIndex, _listObj){
