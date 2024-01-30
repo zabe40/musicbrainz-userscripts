@@ -1,19 +1,28 @@
+import { fetchURL} from '../fetch.js';
+
+function displayError(button, message){
+    let errorMessage = button.parentElement.querySelector("p.bandcamp-tag-importer-error");
+    if(!errorMessage){
+	errorMessage = document.createElement("p");
+	errorMessage.style.wordBreak = "break-word"
+	errorMessage.className = "error bandcamp-tag-importer-error";
+	button.insertAdjacentElement("afterend", errorMessage);
+    }
+    errorMessage.textContent = message;
+}
+
+function clearError(button){
+    let p = button.parentElement.querySelector("p.bandcamp-tag-importer-error");
+    if(p){
+	p.remove();
+    }
+}
+
 function importTags(url, button){
-    GM_xmlhttpRequest({
-	url: url,
-	onabort: function(){
-	    button.disabled = false;
-	},
-	onerror: function(){
-	    button.disabled = false;
-	},
-	ontimeout: function(){
-	    button.disabled = false;
-	},
-	onload: function(response){
-	    if(!((200 <= response.status) && (response.status <= 299))){
-		throw new Error(`HTTP error! Status: ${response.status}`);
-	    }
+    button.disabled = true;
+    clearError(button);
+    fetchURL(url)
+	.then(function(response){
 	    const html = response.responseText;
 	    const parser = new DOMParser();
 	    let doc = parser.parseFromString(html, "text/html");
@@ -40,9 +49,31 @@ function importTags(url, button){
 		});
 	    button.disabled = false;
 	    input.focus();
-	}
-    });
-    button.disabled = true;
+	})
+	.catch(function(error){
+	    console.warn(error);
+	    let message = "";
+	    switch (error.reason){
+	    case 'abort':
+		message = "The request was aborted."
+		break;
+	    case 'error':
+		message = "There was an error with the request. See the console for more details."
+		break;
+	    case 'timeout':
+		message = "The request timed out."
+		break;
+	    case 'httpError':
+		message = `HTTP error! Status: ${error.response.status}`;
+		break;
+	    default:
+		message = "There was an error. See the console for more details."
+	    }
+	    displayError(button, message);
+	})
+	.finally(function(){
+	    button.disabled = false;
+	})
 }
 
 function addImportTagsButton(currentAnchor, _currentIndex, _listObj){
