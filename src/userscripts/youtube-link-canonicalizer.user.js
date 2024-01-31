@@ -19,6 +19,14 @@ function clearError(tableRow){
     }
 }
 
+function isYoutubeLink(link){
+    return link.match("^https://(www.)?youtube\\.com");
+}
+
+function isCanonicalYoutubeLink(link){
+    return link.match("^https?://(www.)?youtube\\.com/channel/");
+}
+
 function fixLink(span){
     const tableRow = span.parentElement.parentElement;
     const observer = new MutationObserver(function(mutations, observer){
@@ -81,7 +89,7 @@ function fixLink(span){
 
 function addFixerUpperButton(currentSpan){
     const tableRow = currentSpan.parentElement.parentElement;
-    if(tableRow.querySelector("a.url").href.match("^https://(www.)?youtube\\.com/channel/")
+    if(isCanonicalYoutubeLink(tableRow.querySelector("a.url").href)
        || tableRow.querySelector('.canonicalizer-button')){
         return;
     }
@@ -98,30 +106,48 @@ function addFixerUpperButton(currentSpan){
     currentSpan.parentElement.parentElement.appendChild(td);
 }
 
+function highlightNoncanonicalLinks(){
+    document.querySelectorAll(".external_links .youtube-favicon")
+        .forEach(function(listItem, currentIndex, listObj){
+            if(!isCanonicalYoutubeLink(listItem.querySelector('a').href)){
+                const link = document.createElement('a');
+                let href = document.location.pathname.match("^(\/artist\/[A-z0-9-]*)")[0];
+                link.href = document.location.origin + href + "/edit";
+                link.className = "styled-button";
+                link.style.float = "right";
+                link.textContent = "Fix URL";
+                listItem.appendChild(link);
+            }
+        });
+}
+
 function runUserscript(){
+    highlightNoncanonicalLinks();
     const target = document.querySelector("#external-links-editor-container");
-    const observer = new MutationObserver(function(mutations){
-        mutations.forEach(function(mutation){
-            if(mutation.addedNodes.length > 0
-               && (mutation.addedNodes.item(0).id == "external-links-editor"
-                   || (mutation.addedNodes.item(0).classList
-                       && mutation.addedNodes.item(0).classList.contains("url")
-                       && mutation.addedNodes.item(0).href.match("^https?://(www\\.)?youtube\\.com")))){
-                document.querySelectorAll(".youtube-favicon")
-                    .forEach(addFixerUpperButton);
-            }
-            if(mutation.removedNodes.length > 0
-               && mutation.removedNodes.item(0).classList
-               && mutation.removedNodes.item(0).classList.contains("url")){
-                mutation.target.nextElementSibling.remove();
-                const tableRow = mutation.target.parentElement;
-                tableRow.removeAttribute("oldLink");
-                tableRow.removeAttribute("newLink");
-                clearError(tableRow);
-            }
+    if(target){
+        const observer = new MutationObserver(function(mutations){
+            mutations.forEach(function(mutation){
+                if(mutation.addedNodes.length > 0
+                   && (mutation.addedNodes.item(0).id == "external-links-editor"
+                       || (mutation.addedNodes.item(0).classList
+                           && mutation.addedNodes.item(0).classList.contains("url")
+                           && isYoutubeLink(mutation.addedNodes.item(0).href)))){
+                    document.querySelectorAll(".youtube-favicon")
+                        .forEach(addFixerUpperButton);
+                }
+                if(mutation.removedNodes.length > 0
+                   && mutation.removedNodes.item(0).classList
+                   && mutation.removedNodes.item(0).classList.contains("url")){
+                    mutation.target.nextElementSibling.remove();
+                    const tableRow = mutation.target.parentElement;
+                    tableRow.removeAttribute("oldLink");
+                    tableRow.removeAttribute("newLink");
+                    clearError(tableRow);
+                }
+            })
         })
-    })
-    observer.observe(target, { childList: true, subtree:true});
+        observer.observe(target, { childList: true, subtree:true});
+    }
 }
 
 if(document.location.href
@@ -132,5 +158,4 @@ if(document.location.href
     }
 }else{
     runUserscript();
-    console.log("runned");
 }
