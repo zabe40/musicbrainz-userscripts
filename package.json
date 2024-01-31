@@ -5,21 +5,21 @@
     "description": "My Userscripts for MusicBrainz",
     "homepage": "https://github.com/zabe40/musicbrainz-userscripts",
     "repository": {
-	"type": "git",
-	"url": "https://github.com/zabe40/musicbrainz-userscripts.git"
+        "type": "git",
+        "url": "https://github.com/zabe40/musicbrainz-userscripts.git"
     },
     "type": "module",
     "scripts": {
-	"build": "node build.js"
+        "build": "node build.js"
     },
     "files": [
-	"src/*.js"
+        "src/*.js"
     ],
     "devDependencies": {
-	"@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler>=0.8.2"
+        "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler>=0.8.2"
     },
     "dependencies": {
-	"@kellnerd/es-utils": "github:kellnerd/es-utils",
-	"@kellnerd/musicbrainz-scripts": "github:kellnerd/musicbrainz-scripts"
+        "@kellnerd/es-utils": "github:kellnerd/es-utils",
+        "@kellnerd/musicbrainz-scripts": "github:kellnerd/musicbrainz-scripts"
     }
 }
