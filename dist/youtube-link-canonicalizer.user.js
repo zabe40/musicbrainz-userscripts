@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-01-31
+// @version       2024-02-14
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -10,8 +10,10 @@
 // @supportURL    https://github.com/zabe40/musicbrainz-userscripts/issues
 // @grant         GM_xmlhttpRequest
 // @connect       youtube.com
+// @connect       musicbrainz.org
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/dialog*
+// @match         *://*.musicbrainz.org/url/*
 // ==/UserScript==
 
 (function () {
@@ -84,43 +86,135 @@
 
 	const editNoteSeparator = '\n—\n';
 
+	/**
+	 * Extracts the entity type and ID from a MusicBrainz URL (can be incomplete and/or with additional path components and query parameters).
+	 * @param {string} url URL of a MusicBrainz entity page.
+	 * @returns {{ type: CoreEntityTypeT | 'mbid', mbid: MB.MBID } | undefined} Type and ID.
+	 */
+	function extractEntityFromURL(url) {
+		const entity = url.match(/(area|artist|event|genre|instrument|label|mbid|place|recording|release|release-group|series|url|work)\/([0-9a-f-]{36})(?:$|\/|\?)/);
+		return entity ? {
+			type: entity[1],
+			mbid: entity[2]
+		} : undefined;
+	}
+
+	/**
+	 * Returns a promise that resolves after the given delay.
+	 * @param {number} ms Delay in milliseconds.
+	 */
+	function delay(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	// Adapted from https://thoughtspile.github.io/2018/07/07/rate-limit-promises/
+
+
+	function rateLimitedQueue(operation, interval) {
+		let queue = Promise.resolve(); // empty queue is ready
+		return (...args) => {
+			const result = queue.then(() => operation(...args)); // queue the next operation
+			// start the next delay, regardless of the last operation's success
+			queue = queue.then(() => delay(interval), () => delay(interval));
+			return result;
+		};
+	}
+
+	/**
+	 * Limits the number of requests for the given operation within a time interval.
+	 * @template Params
+	 * @template Result
+	 * @param {(...args: Params) => Result} operation Operation that should be rate-limited.
+	 * @param {number} interval Time interval (in ms).
+	 * @param {number} requestsPerInterval Maximum number of requests within the interval.
+	 * @returns {(...args: Params) => Promise<Awaited<Result>>} Rate-limited version of the given operation.
+	 */
+	function rateLimit(operation, interval, requestsPerInterval = 1) {
+		if (requestsPerInterval == 1) {
+			return rateLimitedQueue(operation, interval);
+		}
+		const queues = Array(requestsPerInterval).fill().map(() => rateLimitedQueue(operation, interval));
+		let queueIndex = 0;
+		return (...args) => {
+			queueIndex = (queueIndex + 1) % requestsPerInterval; // use the next queue
+			return queues[queueIndex](...args); // return the result of the operation
+		};
+	}
+
+	/**
+	 * Calls to the MusicBrainz API are limited to one request per second.
+	 * https://musicbrainz.org/doc/MusicBrainz_API
+	 */
+	const callAPI = rateLimit(fetch, 1000);
+
+	/**
+	 * Makes a request to the MusicBrainz API of the currently used server and returns the results as JSON.
+	 * @param {string} endpoint Endpoint (e.g. the entity type) which should be queried.
+	 * @param {Record<string,string>} query Query parameters.
+	 * @param {string[]} inc Include parameters which should be added to the query parameters.
+	 */
+	async function fetchFromAPI(endpoint, query = {}, inc = []) {
+		if (inc.length) {
+			query.inc = inc.join(' '); // spaces will be encoded as `+`
+		}
+		query.fmt = 'json';
+		const headers = {
+			'Accept': 'application/json',
+			// 'User-Agent': 'Application name/<version> ( contact-url )',
+		};
+		const response = await callAPI(`https://musicbrainz.org/ws/2/${endpoint}?${new URLSearchParams(query)}`, { headers });
+		if (response.ok) {
+			return response.json();
+		} else {
+			throw response;
+		}
+	}
+
 	function fetchURL(url, options){
 	    return new Promise((resolve, reject) => {
 	        GM_xmlhttpRequest({
 	            url: url,
 	            onload: function(response){
-	                if((200 <= response.status) && (response.status <= 299)){
-	                    resolve(response);
+	                if(400 <= response.status){
+	                    reject(new Error(`HTTP error! Status: ${response.status}`,
+	                                     { cause: response}));
 	                }else {
-	                    reject({reason: 'httpError', response: response});
+	                    resolve(response);
 	                }
 	            },
-	            onabort: function(...errors){
-	                reject({reason: 'abort', info: errors});
+	            onabort: function(error){
+	                reject(new Error("The request was aborted.",
+	                                 { cause: error}));
 	            },
-	            onerror: function(...errors){
-	                reject({reason: 'error', info: errors});
+	            onerror: function(error){
+	                reject(new Error("There was an error with the request. See the console for more details.",
+	                                 { cause: error}));
 	            },
-	            ontimeout: function(...errors){
-	                reject({reason: 'timeout', info: errors});
+	            ontimeout: function(error){
+	                reject(new Error("The request timed out.",
+	                                 { cause: error}));
 	            },
 	            ...options,
 	        });
 	    });
 	}
 
-	function displayError(tableRow, message){
-	    let errorMessage = tableRow.querySelector("p.canonicalizer-error"); 
-	    if(!errorMessage){
-	        errorMessage = document.createElement("p");
-	        errorMessage.className = "error canonicalizer-error";
-	        tableRow.querySelector("a.url").insertAdjacentElement("afterend", errorMessage);
+	function displayError(element, error, selector = ""){
+	    let p = element.querySelector("p.canonicalizer-error");
+	    if(!p){
+	        p = document.createElement("p");
+	        p.className = "error canonicalizer-error";
+	        p.style.wordBreak = "break-word";
+	        if(selector){
+	            element = element.querySelector(selector) || element;
+	        }
+	        element.insertAdjacentElement("afterend", p);
 	    }
-	    errorMessage.textContent = message;
+	    p.textContent = error.message;
 	}
 
-	function clearError(tableRow){
-	    let p = tableRow.querySelector("p.canonicalizer-error");
+	function clearError(element){
+	    let p = element.querySelector("p.canonicalizer-error");
 	    if(p){
 	        p.remove();
 	    }
@@ -134,7 +228,16 @@
 	    return link.match("^https?://(www.)?youtube\\.com/channel/");
 	}
 
-	function fixLink(span){
+	function getCanonicalizedYoutubeLink(link){
+	    return fetchURL(link).then((response) => {
+	        const html = response.responseText;
+	        const parser = new DOMParser();
+	        let doc = parser.parseFromString(html, "text/html");
+	        return doc.querySelector("link[rel=\"canonical\"]").href;
+	    });
+	}
+
+	function fixLinkOnArtistPage(span){
 	    const tableRow = span.parentElement.parentElement;
 	    const observer = new MutationObserver(function(mutations, observer){
 	        mutations.forEach(function(mutation){
@@ -155,43 +258,22 @@
 	        tableRow.querySelector("td.link-actions > button.edit-item").click();
 	        return;
 	    }
-	    fetchURL(tableRow.querySelector("td > a").href)
-	        .then(function(response){
-	            clearError(tableRow);
-	            const html = response.responseText;
-	            const parser = new DOMParser();
-	            let doc = parser.parseFromString(html, "text/html");
+	    tableRow.querySelector(".canonicalizer-button").disabled = true;
+	    clearError(tableRow);
+	    getCanonicalizedYoutubeLink(tableRow.querySelector("td > a").href)
+	        .then(function(canonicalizedLink){
 	            tableRow.setAttribute("oldLink", tableRow.querySelector("td > a").href);
-	            tableRow.setAttribute("newLink", doc.querySelector("link[rel=\"canonical\"]").href);
+	            tableRow.setAttribute("newLink", canonicalizedLink);
 	            tableRow.querySelector("td.link-actions > button.edit-item").click();
 	        })
 	        .catch(function(error){
 	            console.warn(error);
-	            let message = "";
-	            switch (error.reason){
-	            case 'abort':
-	                message = "The request was aborted.";
-	                break;
-	            case 'error':
-	                message = "There was an error with the request. See the console for more details.";
-	                break;
-	            case 'timeout':
-	                message = "The request timed out.";
-	                break;
-	            case 'httpError':
-	                message = `HTTP error! Status: ${error.response.status}`;
-	                break;
-	            default:
-	                message = "There was an error. See the console for more details.";
-	            }
-	            displayError(tableRow, message);
+	            displayError(tableRow, error, "a.url");
 	            observer.disconnect();
 	        })
 	        .finally(function(){
 	            tableRow.querySelector(".canonicalizer-button").disabled = false;
 	        });
-	    tableRow.querySelector(".canonicalizer-button").disabled = true;
-	    clearError(tableRow);
 	}
 
 	function addFixerUpperButton(currentSpan){
@@ -201,7 +283,7 @@
 	        return;
 	    }
 	    let button = document.createElement('button');
-	    button.addEventListener("click", (function(){fixLink(currentSpan);}));
+	    button.addEventListener("click", (function(){fixLinkOnArtistPage(currentSpan);}));
 	    button.type = 'button';
 	    button.innerHTML = "Canonicalize URL";
 	    button.className = 'styled-button canonicalizer-button';
@@ -216,14 +298,30 @@
 	function highlightNoncanonicalLinks(){
 	    document.querySelectorAll(".external_links .youtube-favicon")
 	        .forEach(function(listItem, currentIndex, listObj){
-	            if(!isCanonicalYoutubeLink(listItem.querySelector('a').href)){
-	                const link = document.createElement('a');
-	                let href = document.location.pathname.match("^(\/artist\/[A-z0-9-]*)")[0];
-	                link.href = document.location.origin + href + "/edit";
-	                link.className = "styled-button";
-	                link.style.float = "right";
-	                link.textContent = "Fix URL";
-	                listItem.appendChild(link);
+	            const ytLink = listItem.querySelector('a').href;
+	            if(!isCanonicalYoutubeLink(ytLink)){
+	                const linkButton = document.createElement('a');
+	                linkButton.className = "styled-button canonicalizer-button";
+	                linkButton.style.float = "right";
+	                linkButton.textContent = "Fix URL";
+	                const entity = extractEntityFromURL(document.location.href);
+	                fetchFromAPI(entity.type + "/" + entity.mbid,
+	                             {"inc": "url-rels"})
+	                    .then((response) => {
+	                        let urlID = false;
+	                        for(const urlObject of response.relations){
+	                            if(urlObject.url.resource == ytLink){
+	                                urlID = urlObject.url.id;
+	                                break;
+	                            }
+	                        }
+	                        linkButton.href = document.location.origin + "/url/" + urlID + "/edit";
+	                        listItem.appendChild(linkButton);
+	                    })
+	                    .catch((error) => {
+	                        console.error(error);
+	                        displayError(listItem, error, ".canonicalizer-button");
+	                    });
 	            }
 	        });
 	}
@@ -257,14 +355,54 @@
 	    }
 	}
 
-	if(document.location.href
-	   .match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
+	function fixLinkURLEdit(row){
+	    const urlInput = row.querySelector("input#id-edit-url\\.url");
+	    const button = row.querySelector("button.canonicalizer-button");
+	    urlInput.setAttribute("oldLink", urlInput.value);
+	    button.disabled = true;
+	    clearError(row);
+	    getCanonicalizedYoutubeLink(urlInput.value)
+	        .then((canonicalizedURL) => {
+	            setReactInputValue(urlInput, canonicalizedURL);
+	            addMessageToEditNote(urlInput.getAttribute("oldLink")
+	                                 + " → "
+	                                 + canonicalizedURL);
+	        })
+	        .catch((error) => {
+	            console.warn(error);
+	            displayError(row, error, ".canonicalizer-button");
+	        })
+	        .finally(() => {
+	            button.disabled = false;
+	        });
+	}
+
+	function runOnURLEditPage(){
+	    const urlInput = document.querySelector("input#id-edit-url\\.url");
+	    if(!urlInput){
+	        return;
+	    }
+	    if(!isYoutubeLink(urlInput.value) || isCanonicalYoutubeLink(urlInput.value)){
+	        return;
+	    }
+	    const button = document.createElement("button");
+	    button.type = "button";
+	    button.textContent = "Canonicalize URL";
+	    button.className = "styled-button canonicalizer-button";
+	    button.addEventListener("click", function(){fixLinkURLEdit(urlInput.parentElement);});
+	    urlInput.insertAdjacentElement("afterend", button);
+	}
+
+	const location = document.location.href;
+	if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
 	    if((new URLSearchParams(document.location.search))
 	       .get("path").match("^/artist/create")){
 	        runUserscript();
 	    }
-	}else {
+	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/artist")){
 	    runUserscript();
+	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/url")){
+	    runOnURLEditPage();
 	}
 
 })();

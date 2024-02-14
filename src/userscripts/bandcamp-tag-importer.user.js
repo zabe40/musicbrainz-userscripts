@@ -1,6 +1,6 @@
 import { fetchURL} from '../fetch.js';
 
-function displayError(button, message){
+function displayError(button, error){
     let errorMessage = button.parentElement.querySelector("p.bandcamp-tag-importer-error");
     if(!errorMessage){
         errorMessage = document.createElement("p");
@@ -8,7 +8,7 @@ function displayError(button, message){
         errorMessage.className = "error bandcamp-tag-importer-error";
         button.insertAdjacentElement("afterend", errorMessage);
     }
-    errorMessage.textContent = message;
+    errorMessage.textContent = error.message;
 }
 
 function clearError(button){
@@ -52,24 +52,7 @@ function importTags(url, button){
         })
         .catch(function(error){
             console.warn(error);
-            let message = "";
-            switch (error.reason){
-            case 'abort':
-                message = "The request was aborted."
-                break;
-            case 'error':
-                message = "There was an error with the request. See the console for more details."
-                break;
-            case 'timeout':
-                message = "The request timed out."
-                break;
-            case 'httpError':
-                message = `HTTP error! Status: ${error.response.status}`;
-                break;
-            default:
-                message = "There was an error. See the console for more details."
-            }
-            displayError(button, message);
+            displayError(button, error);
         })
         .finally(function(){
             button.disabled = false;

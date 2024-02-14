@@ -3,20 +3,24 @@ export function fetchURL(url, options){
         GM_xmlhttpRequest({
             url: url,
             onload: function(response){
-                if((200 <= response.status) && (response.status <= 299)){
-                    resolve(response);
+                if(400 <= response.status){
+                    reject(new Error(`HTTP error! Status: ${response.status}`,
+                                     { cause: response}));
                 }else{
-                    reject({reason: 'httpError', response: response});
+                    resolve(response);
                 }
             },
-            onabort: function(...errors){
-                reject({reason: 'abort', info: errors})
+            onabort: function(error){
+                reject(new Error("The request was aborted.",
+                                 { cause: error}));
             },
-            onerror: function(...errors){
-                reject({reason: 'error', info: errors})
+            onerror: function(error){
+                reject(new Error("There was an error with the request. See the console for more details.",
+                                 { cause: error}));
             },
-            ontimeout: function(...errors){
-                reject({reason: 'timeout', info: errors})
+            ontimeout: function(error){
+                reject(new Error("The request timed out.",
+                                 { cause: error}));
             },
             ...options,
         });

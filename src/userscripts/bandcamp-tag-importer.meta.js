@@ -2,7 +2,7 @@
 const metadata = {
     name: 'MusicBrainz Bandcamp Tag Importer',
     namespace: 'https://github.com/zabe40',
-    version: '2024-01-30',
+    version: '2024-02-14',
     description: 'Easily submit tags on Bandcamp pages to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',

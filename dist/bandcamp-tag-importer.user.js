@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Bandcamp Tag Importer
-// @version       2024-01-30
+// @version       2024-02-14
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags on Bandcamp pages to Musicbrainz
@@ -21,27 +21,31 @@
             GM_xmlhttpRequest({
                 url: url,
                 onload: function(response){
-                    if((200 <= response.status) && (response.status <= 299)){
-                        resolve(response);
+                    if(400 <= response.status){
+                        reject(new Error(`HTTP error! Status: ${response.status}`,
+                                         { cause: response}));
                     }else {
-                        reject({reason: 'httpError', response: response});
+                        resolve(response);
                     }
                 },
-                onabort: function(...errors){
-                    reject({reason: 'abort', info: errors});
+                onabort: function(error){
+                    reject(new Error("The request was aborted.",
+                                     { cause: error}));
                 },
-                onerror: function(...errors){
-                    reject({reason: 'error', info: errors});
+                onerror: function(error){
+                    reject(new Error("There was an error with the request. See the console for more details.",
+                                     { cause: error}));
                 },
-                ontimeout: function(...errors){
-                    reject({reason: 'timeout', info: errors});
+                ontimeout: function(error){
+                    reject(new Error("The request timed out.",
+                                     { cause: error}));
                 },
                 ...options,
             });
         });
     }
 
-    function displayError(button, message){
+    function displayError(button, error){
         let errorMessage = button.parentElement.querySelector("p.bandcamp-tag-importer-error");
         if(!errorMessage){
             errorMessage = document.createElement("p");
@@ -49,7 +53,7 @@
             errorMessage.className = "error bandcamp-tag-importer-error";
             button.insertAdjacentElement("afterend", errorMessage);
         }
-        errorMessage.textContent = message;
+        errorMessage.textContent = error.message;
     }
 
     function clearError(button){
@@ -93,24 +97,7 @@
             })
             .catch(function(error){
                 console.warn(error);
-                let message = "";
-                switch (error.reason){
-                case 'abort':
-                    message = "The request was aborted.";
-                    break;
-                case 'error':
-                    message = "There was an error with the request. See the console for more details.";
-                    break;
-                case 'timeout':
-                    message = "The request timed out.";
-                    break;
-                case 'httpError':
-                    message = `HTTP error! Status: ${error.response.status}`;
-                    break;
-                default:
-                    message = "There was an error. See the console for more details.";
-                }
-                displayError(button, message);
+                displayError(button, error);
             })
             .finally(function(){
                 button.disabled = false;
