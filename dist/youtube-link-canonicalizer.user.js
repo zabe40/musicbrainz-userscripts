@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-02-14
+// @version       2024-02-14_1
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -12,6 +12,10 @@
 // @connect       youtube.com
 // @connect       musicbrainz.org
 // @match         *://*.musicbrainz.org/artist/*
+// @match         *://*.musicbrainz.org/event/*
+// @match         *://*.musicbrainz.org/label/*
+// @match         *://*.musicbrainz.org/place/*
+// @match         *://*.musicbrainz.org/series/*
 // @match         *://*.musicbrainz.org/dialog*
 // @match         *://*.musicbrainz.org/url/*
 // ==/UserScript==
@@ -237,7 +241,7 @@
 	    });
 	}
 
-	function fixLinkOnArtistPage(span){
+	function fixLinkOnNonURLPage(span){
 	    const tableRow = span.parentElement.parentElement;
 	    const observer = new MutationObserver(function(mutations, observer){
 	        mutations.forEach(function(mutation){
@@ -283,7 +287,7 @@
 	        return;
 	    }
 	    let button = document.createElement('button');
-	    button.addEventListener("click", (function(){fixLinkOnArtistPage(currentSpan);}));
+	    button.addEventListener("click", (function(){fixLinkOnNonURLPage(currentSpan);}));
 	    button.type = 'button';
 	    button.innerHTML = "Canonicalize URL";
 	    button.className = 'styled-button canonicalizer-button';
@@ -396,13 +400,13 @@
 	const location = document.location.href;
 	if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
 	    if((new URLSearchParams(document.location.search))
-	       .get("path").match("^/artist/create")){
+	       .get("path").match("^/(artist|event|label|place|series)/create")){
 	        runUserscript();
 	    }
-	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/artist")){
-	    runUserscript();
 	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/url")){
 	    runOnURLEditPage();
+	}else {
+	    runUserscript();
 	}
 
 })();

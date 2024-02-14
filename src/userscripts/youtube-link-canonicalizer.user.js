@@ -42,7 +42,7 @@ function getCanonicalizedYoutubeLink(link){
     });
 }
 
-function fixLinkOnArtistPage(span){
+function fixLinkOnNonURLPage(span){
     const tableRow = span.parentElement.parentElement;
     const observer = new MutationObserver(function(mutations, observer){
         mutations.forEach(function(mutation){
@@ -88,7 +88,7 @@ function addFixerUpperButton(currentSpan){
         return;
     }
     let button = document.createElement('button');
-    button.addEventListener("click", (function(){fixLinkOnArtistPage(currentSpan)}));
+    button.addEventListener("click", (function(){fixLinkOnNonURLPage(currentSpan)}));
     button.type = 'button';
     button.innerHTML = "Canonicalize URL";
     button.className = 'styled-button canonicalizer-button';
@@ -201,11 +201,11 @@ function runOnURLEditPage(){
 const location = document.location.href;
 if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
     if((new URLSearchParams(document.location.search))
-       .get("path").match("^/artist/create")){
+       .get("path").match("^/(artist|event|label|place|series)/create")){
         runUserscript();
     }
-}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/artist")){
-    runUserscript();
 }else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/url")){
     runOnURLEditPage();
+}else{
+    runUserscript();
 }
