@@ -18,6 +18,15 @@ Correct youtube @username artist links to channel IDs
 [![Install](https://img.shields.io/badge/Install-success.svg?style=for-the-badge&logo=tampermonkey)](dist/youtube-link-canonicalizer.user.js?raw=1)
 [![Source](https://img.shields.io/badge/Source-grey.svg?style=for-the-badge&logo=github)](dist/youtube-link-canonicalizer.user.js)
 
+## Why Canonicalize YouTube Links?
+
+YouTube links should point to Channel IDs rather than a handle URL.
+This helps prevent [link rot](https://en.wikipedia.org/wiki/Link_rot),
+since handle URLs can change at any time, while Channel IDs are
+immutable and will not change. For more information about the
+different kinds of YouTube channel URLs, see [this
+page](https://support.google.com/youtube/answer/6180214).
+
 ## Development
 
 These userscripts are built with kellnerd's [userscript
