@@ -1,4 +1,4 @@
-## Why Canonicalize YouTube Links?
+#### Why Canonicalize YouTube Links?
 
 YouTube links should point to Channel IDs rather than a handle URL.
 This helps prevent [link rot](https://en.wikipedia.org/wiki/Link_rot),

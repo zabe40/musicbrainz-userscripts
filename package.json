@@ -16,7 +16,7 @@
         "src/*.js"
     ],
     "devDependencies": {
-        "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler>=0.8.2"
+        "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler#v0.8.4"
     },
     "dependencies": {
         "@kellnerd/es-utils": "github:kellnerd/es-utils",
