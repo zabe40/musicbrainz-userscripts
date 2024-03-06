@@ -117,9 +117,9 @@ function displayLoadingIcon(listItem){
 
 const SVGPreambleLength = "data:image/svg+xml,".length;
 
-function displaySuccessIcon(listItem){
+function displaySuccessIcon(listItem, tags){
     const container = getNewIconContainer(listItem);
-    container.title = "successfully loaded tags";
+    container.title = "successfully loaded tags: " + tags.toString();
     
     container.innerHTML = decodeURIComponent(successIcon.substring(SVGPreambleLength));
     container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
@@ -175,7 +175,7 @@ function importAllTags(){
             displayLoadingIcon(linkListItem);
             promises.push(matchedSite.fetchTags(url)
                           .then((tags) => {
-                              displaySuccessIcon(linkListItem);
+                              displaySuccessIcon(linkListItem, tags);
                               return tags;
                           })
                           .catch((error) => {

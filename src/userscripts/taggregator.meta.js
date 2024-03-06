@@ -2,7 +2,7 @@
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2024-03-06_1',
+    version: '2024-03-06_2',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
@@ -14,7 +14,6 @@ const metadata = {
 // TODO
 // edit svg icons to fill up frame
 // handle tags with commas
-// tell user which tags come from which source in a tooltip
 // normalize tags to genres
 // run on pages for other types of entities?
 // MOAR IMPORTERS!
