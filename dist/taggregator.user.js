@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2024-03-06
+// @version       2024-03-06_1
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -186,6 +186,9 @@
                           {duration: 3000,
                            iterations: Infinity});
       }
+
+      const placeholder = document.createElement('div');
+      container.appendChild(placeholder);
   }
 
   const SVGPreambleLength = "data:image/svg+xml,".length;

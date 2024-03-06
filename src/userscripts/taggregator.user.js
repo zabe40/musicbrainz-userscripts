@@ -110,6 +110,9 @@ function displayLoadingIcon(listItem){
                         {duration: 3000,
                          iterations: Infinity});
     }
+
+    const placeholder = document.createElement('div');
+    container.appendChild(placeholder);
 }
 
 const SVGPreambleLength = "data:image/svg+xml,".length;
