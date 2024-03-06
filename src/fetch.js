@@ -26,3 +26,12 @@ export function fetchURL(url, options){
         });
     });
 }
+
+export function fetchAsHTML(url, options){
+    return fetchURL(url, options)
+        .then((response) => {
+            const html = response.responseText;
+            const parser = new DOMParser();
+            return parser.parseFromString(html, "text/html");
+        })
+}
