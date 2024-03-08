@@ -35,9 +35,8 @@ function addCSSRules(){
     sheet.replace(`
 .taggregator-icon-container {
   float: right;
-  padding-right: ${1.5 * iconContainerSize}px;
+  padding-right: ${iconContainerSize}px;
   position: relative;
-  bottom: ${3 * iconContainerSize / 10}px;
 }
 
 .taggregator-icon-container > * {
@@ -52,10 +51,6 @@ function addCSSRules(){
 
 .taggregator-status-icon {
   height:${0.75 * iconContainerSize}px;
-}
-
-.taggregator-status-icon text {
-  visibility: collapse;
 }
 
 .taggregator-success-icon {

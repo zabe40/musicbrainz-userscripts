@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2024-03-06_2
+// @version       2024-03-08
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -15,13 +15,13 @@
 (function () {
   'use strict';
 
-  var img$2 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' x='0px' y='0px' viewBox='0 0 100 125' style='enable-background:new 0 0 100 100%3b' xml:space='preserve'%3e %3cpolygon points='70.9%2c63.9 57.1%2c50 70.9%2c36.1 63.9%2c29.1 50%2c42.9 36.1%2c29.1 29.1%2c36.1 42.9%2c50 29.1%2c63.9 36.1%2c70.9 50%2c57.1 63.9%2c70.9 '/%3e %3ctext x='0' y='115' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3eCreated by mikicon%3c/text%3e %3ctext x='0' y='120' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3efrom the Noun Project%3c/text%3e%3c/svg%3e";
+  var img$2 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 41.799999 41.799999' xml:space='preserve' width='41.799999' height='41.799999' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='50%2c42.9 36.1%2c29.1 29.1%2c36.1 42.9%2c50 29.1%2c63.9 36.1%2c70.9 50%2c57.1 63.9%2c70.9 70.9%2c63.9 57.1%2c50 70.9%2c36.1 63.9%2c29.1 ' transform='translate(-29.1%2c-29.1)' /%3e%3c/svg%3e";
     var errorIcon = img$2;
 
-  var img$1 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' x='0px' y='0px' viewBox='0 0 512 640' enable-background='new 0 0 512 512' xml:space='preserve'%3e %3crect x='0.013' y='197.127' width='511.975' height='117.746'/%3e %3ctext x='0' y='527' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3eCreated by Hassan ali%3c/text%3e %3ctext x='0' y='532' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3efrom the Noun Project%3c/text%3e%3c/svg%3e";
+  var img$1 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 511.97501 117.746' enable-background='new 0 0 512 512' xml:space='preserve' width='511.97501' height='117.746' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3crect x='0' y='0' width='511.97501' height='117.746' /%3e%3c/svg%3e";
     var siteUnsupportedIcon = img$1;
 
-  var img = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' x='0px' y='0px' viewBox='0 0 100 125' style='enable-background:new 0 0 100 100%3b' xml:space='preserve'%3e %3cg%3e %3cpolygon points='75.9%2c37.6 68.8%2c30.5 44%2c55.3 31.2%2c42.6 24.1%2c49.6 44%2c69.5 '/%3e %3c/g%3e %3ctext x='0' y='115' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3eCreated by mikicon%3c/text%3e %3ctext x='0' y='120' fill='black' font-size='5px' font-weight='bold' font-family=''Helvetica Neue'%2c Helvetica%2c Arial-Unicode%2c Arial%2c Sans-serif'%3efrom the Noun Project%3c/text%3e%3c/svg%3e";
+  var img = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 100 75.289574' xml:space='preserve' width='100' height='75.289574' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='44%2c69.5 75.9%2c37.6 68.8%2c30.5 44%2c55.3 31.2%2c42.6 24.1%2c49.6 ' transform='matrix(1.9305019%2c0%2c0%2c1.9305019%2c-46.525096%2c-58.880308)' /%3e%3c/svg%3e";
     var successIcon = img;
 
   function fetchURL(url, options){
@@ -117,9 +117,8 @@
       sheet.replace(`
 .taggregator-icon-container {
   float: right;
-  padding-right: ${1.5 * iconContainerSize}px;
+  padding-right: ${iconContainerSize}px;
   position: relative;
-  bottom: ${3 * iconContainerSize / 10}px;
 }
 
 .taggregator-icon-container > * {
@@ -134,10 +133,6 @@
 
 .taggregator-status-icon {
   height:${0.75 * iconContainerSize}px;
-}
-
-.taggregator-status-icon text {
-  visibility: collapse;
 }
 
 .taggregator-success-icon {
