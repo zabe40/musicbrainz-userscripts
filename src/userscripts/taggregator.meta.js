@@ -13,6 +13,7 @@ const metadata = {
 
 // TODO
 // handle tags with commas
+// populate @connect metadata field
 // normalize tags to genres
 // run on pages for other types of entities?
 // MOAR IMPORTERS!
