@@ -12,6 +12,7 @@ const metadata = {
 };
 
 // TODO
+// add screenshots to readme
 // handle tags with commas
 // populate @connect metadata field
 // normalize tags to genres
