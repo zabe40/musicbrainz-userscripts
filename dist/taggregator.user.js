@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2024-03-08
+// @version       2024-03-12
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -168,7 +168,9 @@
 
   function displayLoadingIcon(listItem){
       const container = getNewIconContainer(listItem);
-      container.title = "loading tags";
+
+      const host = getHostFromListItem(listItem);
+      container.title = `loading tags from ${host}`;
       
       for(let i=0; i < 6; i++){
           let element = document.createElement('div');
@@ -196,7 +198,9 @@
 
   function displaySuccessIcon(listItem, tags){
       const container = getNewIconContainer(listItem);
-      container.title = "successfully loaded tags: " + tags.toString();
+
+      const host = getHostFromListItem(listItem);
+      container.title = `loaded tags from ${host}: ${tags.toString()}`;
       
       container.innerHTML = decodeURIComponent(successIcon.substring(SVGPreambleLength));
       container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
@@ -204,7 +208,9 @@
 
   function displayErrorIcon(listItem, error){
       const container = getNewIconContainer(listItem);
-      container.title = error.message;
+
+      const host = getHostFromListItem(listItem);
+      container.title = `${host}: ${error.message}`;
       
       container.innerHTML = decodeURIComponent(errorIcon.substring(SVGPreambleLength));
       container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
@@ -212,15 +218,25 @@
 
   function displaySiteNotSupportedIcon(listItem){
       const container = getNewIconContainer(listItem);
-      container.title = "site not supported";
+
+      const host = getHostFromListItem(listItem);
+      container.title = `${host} not supported`;
 
       container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
       container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
   }
 
-  function matchesDomain(url, domain){
+  function URLHostname(url){
       const urlObj = new URL(url);
-      return urlObj.hostname.endsWith(domain);
+      return urlObj.hostname;
+  }
+
+  function getHostFromListItem(li){
+      return URLHostname(li.querySelector("a").href);
+  }
+
+  function matchesDomain(url, domain){
+      return URLHostname(url).endsWith(domain);
   }
 
   function addTagsToInputAndFocus(tags){
