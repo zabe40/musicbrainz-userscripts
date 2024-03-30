@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Entity Images
-// @version       2024-03-29_3
+// @version       2024-03-30
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Display images on Musicbrainz for artists, labels, places, and events
@@ -180,6 +180,10 @@
 	            if(imageUrls.length > 0){
 	                const div = document.createElement("div");
 	                div.className = "entity-image";
+
+	                const a = document.createElement("a");
+	                a.href = imageUrls[0].title;
+	                div.appendChild(a);
 	                
 	                const img = document.createElement("img");
 	                img.src = imageUrls[0].url;
@@ -199,7 +203,7 @@
 	                    img.style.objectFit = "contain";
 	                    break;
 	                }
-	                div.appendChild(img);
+	                a.appendChild(img);
 
 	                if(imageUrls.length > 1){
 	                    const select = document.createElement("select");
@@ -209,6 +213,7 @@
 	                    const listener = function(event){
 	                        console.log(event);
 	                        img.src = select.selectedOptions[0].value;
+	                        a.href = select.selectedOptions[0].textContent;
 	                    };
 	                    select.addEventListener("change", listener);
 	                    for(const url of imageUrls){

@@ -3,7 +3,7 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Entity Images',
     namespace: 'https://github.com/zabe40',
-    version: '2024-03-29_3',
+    version: '2024-03-30',
     description: 'Display images on Musicbrainz for artists, labels, places, and events',
     author: 'zabe',
     match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['artist', 'label', 'place', 'event'],'/*'])
@@ -13,5 +13,4 @@ const metadata = {
 
 // TODO
 // slideshow for entities with multiple images
-// link to image
 export default metadata;

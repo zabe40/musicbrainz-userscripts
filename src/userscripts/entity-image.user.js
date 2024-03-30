@@ -47,6 +47,10 @@ function runUserscript(){
             if(imageUrls.length > 0){
                 const div = document.createElement("div");
                 div.className = "entity-image";
+
+                const a = document.createElement("a");
+                a.href = imageUrls[0].title;
+                div.appendChild(a);
                 
                 const img = document.createElement("img");
                 img.src = imageUrls[0].url;
@@ -66,7 +70,7 @@ function runUserscript(){
                     img.style.objectFit = "contain";
                     break;
                 }
-                div.appendChild(img);
+                a.appendChild(img);
 
                 if(imageUrls.length > 1){
                     const select = document.createElement("select");
@@ -76,6 +80,7 @@ function runUserscript(){
                     const listener = function(event){
                         console.log(event);
                         img.src = select.selectedOptions[0].value;
+                        a.href = select.selectedOptions[0].textContent;
                     }
                     select.addEventListener("change", listener);
                     for(const url of imageUrls){
