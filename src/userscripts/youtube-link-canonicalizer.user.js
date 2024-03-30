@@ -190,7 +190,7 @@ function runOnURLEditPage(){
     if(!isYoutubeLink(urlInput.value) || isCanonicalYoutubeLink(urlInput.value)){
         return;
     }
-    const button = document.createElement("button")
+    const button = document.createElement("button");
     button.type = "button";
     button.textContent = "Canonicalize URL";
     button.className = "styled-button canonicalizer-button";

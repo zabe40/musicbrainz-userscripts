@@ -1,13 +1,15 @@
+import { cartesian} from '@agarimo/cartesian';
 /** @type {import('@kellnerd/userscript-bundler').EnhancedUserscriptMetadata} */
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2024-03-12',
+    version: '2024-03-30',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
     supportURL: 'https://github.com/zabe40/musicbrainz-userscripts/issues',
-    match: '*://*.musicbrainz.org/release/*',
+    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/release/*'])
+        .map((array)=>{return array.join("");}),
     grant: 'GM_xmlhttpRequest'
 };
 

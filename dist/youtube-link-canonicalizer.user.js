@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-02-14_1
+// @version       2024-03-30
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -16,8 +16,15 @@
 // @match         *://*.musicbrainz.org/label/*
 // @match         *://*.musicbrainz.org/place/*
 // @match         *://*.musicbrainz.org/series/*
-// @match         *://*.musicbrainz.org/dialog*
 // @match         *://*.musicbrainz.org/url/*
+// @match         *://*.musicbrainz.org/dialog*
+// @match         *://*.musicbrainz.eu/artist/*
+// @match         *://*.musicbrainz.eu/event/*
+// @match         *://*.musicbrainz.eu/label/*
+// @match         *://*.musicbrainz.eu/place/*
+// @match         *://*.musicbrainz.eu/series/*
+// @match         *://*.musicbrainz.eu/url/*
+// @match         *://*.musicbrainz.eu/dialog*
 // ==/UserScript==
 
 (function () {

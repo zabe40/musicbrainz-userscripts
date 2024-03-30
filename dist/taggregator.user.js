@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2024-03-12
+// @version       2024-03-30
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -10,6 +10,7 @@
 // @supportURL    https://github.com/zabe40/musicbrainz-userscripts/issues
 // @grant         GM_xmlhttpRequest
 // @match         *://*.musicbrainz.org/release/*
+// @match         *://*.musicbrainz.eu/release/*
 // ==/UserScript==
 
 (function () {
