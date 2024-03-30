@@ -14,6 +14,18 @@ function getImageURLs(entityURL){
                 .map((relation) => {
                     return relation.url.resource;
                 });
+        })
+        .then((urlArray) => {
+            return Promise.all(urlArray.map(async (url) => {
+                let urlObject = new Object();
+                urlObject.title = url;
+                if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
+                    urlObject.url = await wikimediaImageURL(url);
+                }else{
+                    urlObject.url = await url;
+                }
+                return urlObject;
+            }));
         });
 }
 
@@ -38,12 +50,7 @@ function runUserscript(){
                 div.className = "entity-image";
                 
                 const img = document.createElement("img");
-                const url = imageUrls[0];
-                if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
-                    wikimediaImageURL(url).then((url) => {img.src = url;});
-                }else{
-                    img.src = url;
-                }
+                img.src = imageUrls[0].url;
                 img.style.width = "200px";
                 img.style.height = "200px";
                 img.style.objectFit = "cover";
@@ -56,18 +63,13 @@ function runUserscript(){
                     
                     const listener = function(event){
                         console.log(event);
-                        let url = select.selectedOptions[0].value;
-                        if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
-                            wikimediaImageURL(url).then((url) => {img.src = url;});
-                        }else{
-                            img.src = url;
-                        }
+                        img.src = select.selectedOptions[0].value;
                     }
                     select.addEventListener("change", listener);
                     for(const url of imageUrls){
                         const option = document.createElement("option");
-                        option.textContent = url;
-                        option.value = url;
+                        option.textContent = url.title;
+                        option.value = url.url;
                         select.appendChild(option);
                     }
                     div.appendChild(select);
