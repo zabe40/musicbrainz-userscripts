@@ -1,16 +1,22 @@
 // ==UserScript==
 // @name          MusicBrainz Entity Images
-// @version       2024-03-29_1
+// @version       2024-03-29_2
 // @namespace     https://github.com/zabe40
 // @author        zabe
-// @description   Display images on Musicbrainz pages for artists
+// @description   Display images on Musicbrainz for artists, labels, places, and events
 // @homepageURL   https://github.com/zabe40/musicbrainz-userscripts#musicbrainz-entity-images
 // @downloadURL   https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
 // @updateURL     https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
 // @supportURL    https://github.com/zabe40/musicbrainz-userscripts/issues
 // @grant         GM_xmlhttpRequest
 // @match         *://*.musicbrainz.org/artist/*
+// @match         *://*.musicbrainz.org/label/*
+// @match         *://*.musicbrainz.org/place/*
+// @match         *://*.musicbrainz.org/event/*
 // @match         *://*.musicbrainz.eu/artist/*
+// @match         *://*.musicbrainz.eu/label/*
+// @match         *://*.musicbrainz.eu/place/*
+// @match         *://*.musicbrainz.eu/event/*
 // ==/UserScript==
 
 (function () {
@@ -136,7 +142,7 @@
 	        .then((response) => {
 	            return response.relations
 	                .filter((relation) => {
-	                    return relation.type == "image";
+	                    return ["image", "logo", "poster"].includes(relation.type);
 	                })
 	                .map((relation) => {
 	                    return relation.url.resource;
@@ -179,8 +185,21 @@
 	                const img = document.createElement("img");
 	                img.src = imageUrls[0].url;
 	                img.style.width = "200px";
-	                img.style.height = "200px";
-	                img.style.objectFit = "cover";
+	                switch(extractEntityFromURL(document.location.href).type){
+	                case 'artist':
+	                case 'place':
+	                    img.style.height = "200px";
+	                    img.style.objectFit = "cover";
+	                    break;
+	                case 'label':
+	                    img.style.height = "200px";
+	                    img.style.objectFit = "contain";
+	                    break;
+	                case 'event':
+	                    img.style.minHeight = "200px";
+	                    img.style.objectFit = "contain";
+	                    break;
+	                }
 	                div.appendChild(img);
 
 	                if(imageUrls.length > 1){

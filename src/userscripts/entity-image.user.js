@@ -9,7 +9,7 @@ function getImageURLs(entityURL){
         .then((response) => {
             return response.relations
                 .filter((relation) => {
-                    return relation.type == "image";
+                    return ["image", "logo", "poster"].includes(relation.type);
                 })
                 .map((relation) => {
                     return relation.url.resource;
@@ -52,8 +52,21 @@ function runUserscript(){
                 const img = document.createElement("img");
                 img.src = imageUrls[0].url;
                 img.style.width = "200px";
-                img.style.height = "200px";
-                img.style.objectFit = "cover";
+                switch(extractEntityFromURL(document.location.href).type){
+                case 'artist':
+                case 'place':
+                    img.style.height = "200px";
+                    img.style.objectFit = "cover";
+                    break;
+                case 'label':
+                    img.style.height = "200px";
+                    img.style.objectFit = "contain";
+                    break;
+                case 'event':
+                    img.style.minHeight = "200px";
+                    img.style.objectFit = "contain";
+                    break;
+                }
                 div.appendChild(img);
 
                 if(imageUrls.length > 1){
