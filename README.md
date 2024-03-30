@@ -27,6 +27,13 @@ immutable and will not change. For more information about the
 different kinds of YouTube channel URLs, see [this
 page](https://support.google.com/youtube/answer/6180214).
 
+### MusicBrainz Entity Images
+
+Display images on Musicbrainz pages for artists
+
+[![Install](https://img.shields.io/badge/Install-success.svg?style=for-the-badge&logo=tampermonkey)](dist/entity-image.user.js?raw=1)
+[![Source](https://img.shields.io/badge/Source-grey.svg?style=for-the-badge&logo=github)](dist/entity-image.user.js)
+
 ### MusicBrainz Taggregator
 
 Easily submit tags from anywhere to Musicbrainz

@@ -19,6 +19,7 @@
         "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler#v0.8.4"
     },
     "dependencies": {
+        "@agarimo/cartesian": "^1.0.1",
         "@kellnerd/es-utils": "github:kellnerd/es-utils",
         "@kellnerd/musicbrainz-scripts": "github:kellnerd/musicbrainz-scripts"
     }
