@@ -44,26 +44,25 @@ function wikimediaImageURL(wikimediaCommonsURL){
 function runUserscript(){
     getImageURLs(document.location.href)
         .then((imageUrls) => {
-            console.log(imageUrls);
             if(imageUrls.length > 0){
                 const div = document.createElement("div");
                 div.className = "entity-image";
                 
                 const img = document.createElement("img");
                 img.src = imageUrls[0].url;
-                img.style.width = "200px";
+                img.style.width = "218px";
                 switch(extractEntityFromURL(document.location.href).type){
                 case 'artist':
                 case 'place':
-                    img.style.height = "200px";
+                    img.style.height = "218px";
                     img.style.objectFit = "cover";
                     break;
                 case 'label':
-                    img.style.height = "200px";
+                    img.style.height = "218px";
                     img.style.objectFit = "contain";
                     break;
                 case 'event':
-                    img.style.minHeight = "200px";
+                    img.style.minHeight = "218px";
                     img.style.objectFit = "contain";
                     break;
                 }
@@ -72,7 +71,7 @@ function runUserscript(){
                 if(imageUrls.length > 1){
                     const select = document.createElement("select");
                     select.id = "entity-image-selector";
-                    select.style.maxWidth = "200px";
+                    select.style.maxWidth = "218px";
                     
                     const listener = function(event){
                         console.log(event);
