@@ -199,12 +199,12 @@ function runOnURLEditPage(){
 }
 
 const location = document.location.href;
-if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
+if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.(org|eu)/dialog")){
     if((new URLSearchParams(document.location.search))
        .get("path").match("^/(artist|event|label|place|series)/create")){
         runUserscript();
     }
-}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/url")){
+}else if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.(org|eu)/url")){
     runOnURLEditPage();
 }else{
     runUserscript();

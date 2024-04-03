@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-03-30
+// @version       2024-04-03
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -405,12 +405,12 @@
 	}
 
 	const location = document.location.href;
-	if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.org/dialog")){
+	if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.(org|eu)/dialog")){
 	    if((new URLSearchParams(document.location.search))
 	       .get("path").match("^/(artist|event|label|place|series)/create")){
 	        runUserscript();
 	    }
-	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz.org/url")){
+	}else if(location.match("^https?://((beta|test)\\.)?musicbrainz\\.(org|eu)/url")){
 	    runOnURLEditPage();
 	}else {
 	    runUserscript();
