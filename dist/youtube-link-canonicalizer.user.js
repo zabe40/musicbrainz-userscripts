@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-04-03
+// @version       2024-04-15
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -253,9 +253,9 @@
 	    const observer = new MutationObserver(function(mutations, observer){
 	        mutations.forEach(function(mutation){
 	            if(mutation.addedNodes.length > 0
-	               && mutation.addedNodes.item(0).querySelector("div.dialog-content")){
-	                setReactInputValue(document.querySelector("div.dialog-content input.raw-url"), tableRow.getAttribute("newLink"));
-	                document.querySelector("div.dialog-content button.positive").click();
+	               && mutation.addedNodes.item(0).querySelector("div.dialog")){
+	                setReactInputValue(document.querySelector("div.dialog input.raw-url"), tableRow.getAttribute("newLink"));
+	                document.querySelector("div.dialog button.positive").click();
 	                observer.disconnect();
 	                addMessageToEditNote(tableRow.getAttribute("oldLink")
 	                                     + " → "
