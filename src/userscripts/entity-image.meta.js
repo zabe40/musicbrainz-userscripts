@@ -13,4 +13,5 @@ const metadata = {
 
 // TODO
 // slideshow for entities with multiple images
+// fetch profile pics from bandcamp, spotify, soundcloud, twitter, wikidata
 export default metadata;

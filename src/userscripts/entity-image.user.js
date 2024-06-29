@@ -18,11 +18,11 @@ function getImageURLs(entityURL){
         .then((urlArray) => {
             return Promise.all(urlArray.map(async (url) => {
                 let urlObject = new Object();
-                urlObject.title = url;
+                urlObject.href = url;
                 if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
-                    urlObject.url = await wikimediaImageURL(url);
+                    urlObject.src = await wikimediaImageURL(url);
                 }else{
-                    urlObject.url = await url;
+                    urlObject.src = await url;
                 }
                 return urlObject;
             }));
@@ -41,45 +41,56 @@ function wikimediaImageURL(wikimediaCommonsURL){
         });
 }
 
+function createImage(urlObject){
+    const a = document.createElement("a");
+    a.href = urlObject.href;
+    a.className = "picture";
+
+    const img = document.createElement("img");
+    img.src = urlObject.src;
+
+    a.appendChild(img);
+    return a;
+}
+
 function runUserscript(){
     getImageURLs(document.location.href)
         .then((imageUrls) => {
             if(imageUrls.length > 0){
                 const div = document.createElement("div");
                 div.className = "entity-image";
-
-                const a = document.createElement("a");
-                a.href = imageUrls[0].title;
-                a.className = "picture";
-                div.appendChild(a);
                 
-                const img = document.createElement("img");
-                img.src = imageUrls[0].url;
-                a.appendChild(img);
-
+                for(const urlObject of imageUrls){
+                    div.appendChild(createImage(urlObject));
+                }
                 if(imageUrls.length > 1){
                     const select = document.createElement("select");
                     select.id = "entity-image-selector";
                     select.style.maxWidth = "218px";
                     
-                    const listener = function(event){
+                    let updateImages = function(event){
                         console.log(event);
-                        img.src = select.selectedOptions[0].value;
-                        a.href = select.selectedOptions[0].textContent;
-                    }
-                    select.addEventListener("change", listener);
+                        const imageIndex = select.selectedIndex;
+                        if(imageIndex == -1){
+                            imageIndex = 0;
+                        }
+                        div.querySelectorAll("a").forEach((item, index, list) => {
+                            item.hidden = (index != imageIndex);
+                        });
+                    };
+                    select.addEventListener("change", updateImages);
                     for(const url of imageUrls){
                         const option = document.createElement("option");
-                        option.textContent = url.title;
-                        option.value = url.url;
+                        option.textContent = url.href;
+                        option.value = url.src;
                         select.appendChild(option);
                     }
                     div.appendChild(select);
+                    updateImages();
                 }
-                
                 document.querySelector("#sidebar").insertAdjacentElement("afterbegin", div);
             }
-        })
+        });
 }
 
 runUserscript();
