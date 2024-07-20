@@ -65,10 +65,6 @@ function runUserscript(){
                     img.style.height = "218px";
                     img.style.objectFit = "contain";
                     break;
-                case 'event':
-                    img.style.minHeight = "218px";
-                    img.style.objectFit = "contain";
-                    break;
                 }
                 a.appendChild(img);
 

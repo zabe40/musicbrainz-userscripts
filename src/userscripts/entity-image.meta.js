@@ -4,9 +4,9 @@ const metadata = {
     name: 'MusicBrainz Entity Images',
     namespace: 'https://github.com/zabe40',
     version: '2024-03-30',
-    description: 'Display images on Musicbrainz for artists, labels, places, and events',
+    description: 'Display images on Musicbrainz for artists, labels, and places',
     author: 'zabe',
-    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['artist', 'label', 'place', 'event'],'/*'])
+    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['artist', 'label', 'place'],'/*'])
         .map((array)=>{return array.join("");}),
     grant: 'GM_xmlhttpRequest'
 };

@@ -3,7 +3,7 @@
 // @version       2024-03-30
 // @namespace     https://github.com/zabe40
 // @author        zabe
-// @description   Display images on Musicbrainz for artists, labels, places, and events
+// @description   Display images on Musicbrainz for artists, labels, and places
 // @homepageURL   https://github.com/zabe40/musicbrainz-userscripts#musicbrainz-entity-images
 // @downloadURL   https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
 // @updateURL     https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
@@ -12,11 +12,9 @@
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/label/*
 // @match         *://*.musicbrainz.org/place/*
-// @match         *://*.musicbrainz.org/event/*
 // @match         *://*.musicbrainz.eu/artist/*
 // @match         *://*.musicbrainz.eu/label/*
 // @match         *://*.musicbrainz.eu/place/*
-// @match         *://*.musicbrainz.eu/event/*
 // ==/UserScript==
 
 (function () {
@@ -196,10 +194,6 @@
 	                    break;
 	                case 'label':
 	                    img.style.height = "218px";
-	                    img.style.objectFit = "contain";
-	                    break;
-	                case 'event':
-	                    img.style.minHeight = "218px";
 	                    img.style.objectFit = "contain";
 	                    break;
 	                }
