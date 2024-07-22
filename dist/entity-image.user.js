@@ -183,26 +183,11 @@
 
 	                const a = document.createElement("a");
 	                a.href = imageUrls[0].title;
+	                a.className = "picture";
 	                div.appendChild(a);
 	                
 	                const img = document.createElement("img");
 	                img.src = imageUrls[0].url;
-	                img.style.width = "218px";
-	                switch(extractEntityFromURL(document.location.href).type){
-	                case 'artist':
-	                case 'place':
-	                    img.style.height = "218px";
-	                    img.style.objectFit = "cover";
-	                    break;
-	                case 'label':
-	                    img.style.height = "218px";
-	                    img.style.objectFit = "contain";
-	                    break;
-	                case 'event':
-	                    img.style.minHeight = "218px";
-	                    img.style.objectFit = "contain";
-	                    break;
-	                }
 	                a.appendChild(img);
 
 	                if(imageUrls.length > 1){
