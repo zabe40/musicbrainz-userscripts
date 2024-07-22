@@ -179,6 +179,7 @@
 
 	    const img = document.createElement("img");
 	    img.src = urlObject.src;
+	    img.alt = urlObject.alt || "";
 
 	    a.appendChild(img);
 	    return a;
