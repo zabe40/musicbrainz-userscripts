@@ -3,7 +3,7 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Bandcamp Tag Importer',
     namespace: 'https://github.com/zabe40',
-    version: '2024-04-12',
+    version: '2024.7.22',
     description: 'Easily submit tags on Bandcamp pages to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',

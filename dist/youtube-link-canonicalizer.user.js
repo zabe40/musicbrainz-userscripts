@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024-04-15
+// @version       2024.7.22
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs

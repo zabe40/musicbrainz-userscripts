@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Bandcamp Tag Importer
-// @version       2024-04-12
+// @version       2024.7.22
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags on Bandcamp pages to Musicbrainz
