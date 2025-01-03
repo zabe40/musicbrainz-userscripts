@@ -69,7 +69,7 @@ function addCSSRules(){
         .catch((error) => {
             console.error("Failed to replace styles:", error);
         });
-    document.adoptedStyleSheets.push(sheet)
+    document.adoptedStyleSheets.push(sheet);
 }
 
 function getNewIconContainer(listItem){
