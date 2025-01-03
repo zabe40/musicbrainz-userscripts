@@ -1,6 +1,7 @@
 import errorIcon from '../../assets/errorIcon.svg';
 import siteUnsupportedIcon from '../../assets/siteUnsupportedIcon.svg';
 import successIcon from '../../assets/successIcon.svg';
+import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
 
 const sites = [bandcamp];
@@ -157,16 +158,22 @@ function matchesDomain(url, domain){
     return URLHostname(url).endsWith(domain);
 }
 
-function addTagsToInputAndFocus(tags){
+function addTagsAndFocus(tags){
     const input = document.querySelector("input.tag-input")
-          || document.querySelector("#tag-form textarea");
+    const textarea = document.querySelector("#tag-form textarea");
+    let tagString = "";
     for(const tag of tags){
-        if(input.value != ""){
-            input.value += ",";
-        }
-        input.value += tag;
+        tagString += tag + ",";
     }
-    input.focus();
+    if(input){
+        setReactInputValue(input, input.value + tagString);
+        document.querySelector("#tag-form button").click();
+        input.focus();
+    }else if(textarea){
+        setReactTextareaValue(textarea, textarea.value + tagString);
+        document.querySelector("#tag-form button").click();
+        textarea.focus();
+    }
 }
 
 function importAllTags(){
@@ -211,7 +218,7 @@ function importAllTags(){
                 }
             }
         }
-        addTagsToInputAndFocus(tags);
+        addTagsAndFocus(tags);
     });
 }
 

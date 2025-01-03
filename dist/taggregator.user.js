@@ -25,6 +25,32 @@
   var img = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 100 75.289574' xml:space='preserve' width='100' height='75.289574' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='44%2c69.5 75.9%2c37.6 68.8%2c30.5 44%2c55.3 31.2%2c42.6 24.1%2c49.6 ' transform='matrix(1.9305019%2c0%2c0%2c1.9305019%2c-46.525096%2c-58.880308)' /%3e%3c/svg%3e";
     var successIcon = img;
 
+  // Adapted from https://stackoverflow.com/a/46012210
+
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+
+  /**
+   * Sets the value of an input element which has been manipulated by React.
+   * @param {HTMLInputElement} input 
+   * @param {string} value 
+   */
+  function setReactInputValue(input, value) {
+  	nativeInputValueSetter.call(input, value);
+  	input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  const nativeTextareaValueSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+
+  /**
+   * Sets the value of a textarea input element which has been manipulated by React.
+   * @param {HTMLTextAreaElement} input 
+   * @param {string} value 
+   */
+  function setReactTextareaValue(input, value) {
+  	nativeTextareaValueSetter.call(input, value);
+  	input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
   function fetchURL(url, options = {}){
       return new Promise((resolve, reject) => {
           GM_xmlhttpRequest({
@@ -243,16 +269,22 @@
       return URLHostname(url).endsWith(domain);
   }
 
-  function addTagsToInputAndFocus(tags){
-      const input = document.querySelector("input.tag-input")
-            || document.querySelector("#tag-form textarea");
+  function addTagsAndFocus(tags){
+      const input = document.querySelector("input.tag-input");
+      const textarea = document.querySelector("#tag-form textarea");
+      let tagString = "";
       for(const tag of tags){
-          if(input.value != ""){
-              input.value += ",";
-          }
-          input.value += tag;
+          tagString += tag + ",";
       }
-      input.focus();
+      if(input){
+          setReactInputValue(input, input.value + tagString);
+          document.querySelector("#tag-form button").click();
+          input.focus();
+      }else if(textarea){
+          setReactTextareaValue(textarea, textarea.value + tagString);
+          document.querySelector("#tag-form button").click();
+          textarea.focus();
+      }
   }
 
   function importAllTags(){
@@ -297,7 +329,7 @@
                   }
               }
           }
-          addTagsToInputAndFocus(tags);
+          addTagsAndFocus(tags);
       });
   }
 
