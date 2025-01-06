@@ -15,7 +15,6 @@ const metadata = {
 
 // TODO
 // add screenshots/gifs to README
-// populate @connect metadata field
 
 // normalize tags to genres, lookup alias in musicbrainz
 // maybe maintain our own mapping of aliases to genres
