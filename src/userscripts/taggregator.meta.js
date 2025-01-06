@@ -14,10 +14,15 @@ const metadata = {
 };
 
 // TODO
-// add screenshots to readme
-// handle tags with commas
+// add screenshots/gifs to README
 // populate @connect metadata field
-// normalize tags to genres
+// don't add button/warn if editor is logged out
+// only match full domain parts (apple.com shouldnt match badapple.com)
+
+// normalize tags to genres, lookup alias in musicbrainz
+// maybe maintain our own mapping of aliases to genres
+// cache looked-up genres in GM_values
+
 // run on pages for other types of entities?
 // MOAR IMPORTERS!
 export default metadata;
