@@ -266,7 +266,7 @@
   }
 
   function matchesDomain(url, domain){
-      return URLHostname(url).endsWith(domain);
+      return URLHostname(url).match(new RegExp("^(.+\\.)?" + domain));
   }
 
   function addTagsAndFocus(tags){
