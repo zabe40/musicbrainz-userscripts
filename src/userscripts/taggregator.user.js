@@ -225,6 +225,14 @@ function importAllTags(){
 function addImportTagsButton(){
     let linksHeader = document.querySelector("#sidebar h2.external-links");
     if(!linksHeader){
+        console.log("Taggregator bailing: entity has no links");
+        return;
+    }
+
+    const input = document.querySelector("input.tag-input")
+    const textarea = document.querySelector("#tag-form textarea");
+    if(!input && ! textarea){
+        console.log("Taggregator bailing: not logged in")
         return;
     }
 

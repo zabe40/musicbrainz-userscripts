@@ -16,7 +16,6 @@ const metadata = {
 // TODO
 // add screenshots/gifs to README
 // populate @connect metadata field
-// don't add button/warn if editor is logged out
 // only match full domain parts (apple.com shouldnt match badapple.com)
 
 // normalize tags to genres, lookup alias in musicbrainz
