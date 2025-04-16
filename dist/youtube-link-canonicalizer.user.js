@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2024.8.12
+// @version       2025.4.16
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -149,10 +149,14 @@
 		}
 	}
 
-	function fetchURL(url, options){
+	function fetchURL(url, options = {}){
 	    return new Promise((resolve, reject) => {
 	        GM_xmlhttpRequest({
 	            url: url,
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    ...(options.headers || {})
+                },
 	            onload: function(response){
 	                if(400 <= response.status){
 	                    reject(new Error(`HTTP error! Status: ${response.status}`,
@@ -242,7 +246,19 @@
 	        const html = response.responseText;
 	        const parser = new DOMParser();
 	        let doc = parser.parseFromString(html, "text/html");
-	        return doc.querySelector("link[rel=\"canonical\"]").href;
+            const canonicalLink = doc.querySelector("link[rel=\"canonical\"]");
+            
+            if (!canonicalLink) {
+                // Fallback to other methods if canonical link not found
+                const ogUrlMeta = doc.querySelector("meta[property=\"og:url\"]");
+                if (ogUrlMeta && ogUrlMeta.content) {
+                    return ogUrlMeta.content;
+                }
+                
+                throw new Error("Cannot find canonical YouTube URL in the response");
+            }
+            
+	        return canonicalLink.href;
 	    });
 	}
 
