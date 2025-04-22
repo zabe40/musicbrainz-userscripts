@@ -64,11 +64,24 @@ function isCanonicalYoutubeLink(link){
 }
 
 function getCanonicalizedYoutubeLink(link){
-    return fetchURL(link).then((response) => {
-        const html = response.responseText;
-        const parser = new DOMParser();
-        let doc = parser.parseFromString(html, "text/html");
-        return doc.querySelector("link[rel=\"canonical\"]").href;
+    return fetchURL(link, {headers: {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                     + "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                     + "Chrome/91.0.4472.124 "
+                                     + "Safari/537.36"}})
+        .then((response) => {
+            const html = response.responseText;
+            const parser = new DOMParser();
+            let doc = parser.parseFromString(html, "text/html");
+            const canonicalLink = doc.querySelector("link[rel=\"canonical\"]");
+            if (canonicalLink) {
+                return canonicalLink.href;
+            }
+            // Fallback to other methods if canonical link not found
+            const ogUrlMeta = doc.querySelector("meta[property=\"og:url\"]");
+            if (ogUrlMeta && ogUrlMeta.content) {
+                return ogUrlMeta.content;
+            }
+            throw new Error("Cannot find canonical YouTube URL in the response");
     });
 }
 

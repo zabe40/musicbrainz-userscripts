@@ -1,4 +1,4 @@
-export function fetchURL(url, options){
+export function fetchURL(url, options = {}){
     return new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
             url: url,
