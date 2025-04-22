@@ -17,7 +17,7 @@
 (function () {
     'use strict';
 
-    function fetchURL(url, options){
+    function fetchURL(url, options = {}){
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 url: url,

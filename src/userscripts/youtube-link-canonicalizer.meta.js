@@ -3,7 +3,7 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Youtube Link Canonicalizer',
     namespace: 'https://github.com/zabe40',
-    version: '2024.8.12',
+    version: '2025.4.16',
     description: 'Correct youtube @username artist links to channel IDs',
     author: 'zabe',
     match: cartesian(["*://*.musicbrainz.",["org","eu"],"/",
