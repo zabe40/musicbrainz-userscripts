@@ -15,6 +15,7 @@
 // @match         *://*.musicbrainz.eu/artist/*
 // @match         *://*.musicbrainz.eu/label/*
 // @match         *://*.musicbrainz.eu/place/*
+// @match         *://*.musicbrainz.eu/series/*
 // ==/UserScript==
 
 (function () {
