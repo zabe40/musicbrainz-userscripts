@@ -12,9 +12,11 @@
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/label/*
 // @match         *://*.musicbrainz.org/place/*
+// @match         *://*.musicbrainz.org/series/*
 // @match         *://*.musicbrainz.eu/artist/*
 // @match         *://*.musicbrainz.eu/label/*
 // @match         *://*.musicbrainz.eu/place/*
+// @match         *://*.musicbrainz.eu/series/*
 // ==/UserScript==
 
 (function () {

@@ -6,7 +6,7 @@ const metadata = {
     version: '2024.7.22',
     description: 'Display images on Musicbrainz for artists, labels, and places',
     author: 'zabe',
-    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['artist', 'label', 'place'],'/*'])
+    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['artist', 'label', 'place','series'],'/*'])
         .map((array)=>{return array.join("");}),
     grant: 'GM_xmlhttpRequest'
 };
