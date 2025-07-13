@@ -3,7 +3,7 @@
 // @version       2024.7.22
 // @namespace     https://github.com/zabe40
 // @author        zabe
-// @description   Display images on Musicbrainz for artists, labels, and places
+// @description   Display images on Musicbrainz for artists, labels, places, and series.
 // @homepageURL   https://github.com/zabe40/musicbrainz-userscripts#musicbrainz-entity-images
 // @downloadURL   https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
 // @updateURL     https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js

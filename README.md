@@ -29,7 +29,7 @@ page](https://support.google.com/youtube/answer/6180214).
 
 ### MusicBrainz Entity Images
 
-Display images on Musicbrainz for artists, labels, and places
+Display images on Musicbrainz for artists, labels, places, and series.
 
 [![Install](https://img.shields.io/badge/Install-success.svg?style=for-the-badge&logo=tampermonkey)](dist/entity-image.user.js?raw=1)
 [![Source](https://img.shields.io/badge/Source-grey.svg?style=for-the-badge&logo=github)](dist/entity-image.user.js)
