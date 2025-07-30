@@ -8,9 +8,9 @@ const metadata = {
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
     supportURL: 'https://github.com/zabe40/musicbrainz-userscripts/issues',
-    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['release', 'release-group'],'/*'])
+    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['release', 'release-group','artist','work'],'/*'])
         .map((array)=>{return array.join("");}),
-    grant: 'GM_xmlhttpRequest'
+    grant: ['GM_xmlhttpRequest','GM_getValue','GM_setValue'],
 };
 
 // TODO

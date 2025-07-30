@@ -1,4 +1,4 @@
-function fetchDiscogsTags(url){
+function fetchDiscogsTags(url, entityType){
     let urlObj = new URL(url);
     let path = urlObj.pathname.split('/');
     let APIURL = "https://api.discogs.com/";
@@ -12,4 +12,5 @@ function fetchDiscogsTags(url){
 }
 
 export const discogs = { domain: "discogs.com",
-                         fetchTags: fetchDiscogsTags};
+                         fetchTags: fetchDiscogsTags,
+                         supportedTypes: ["release-group","release"]};

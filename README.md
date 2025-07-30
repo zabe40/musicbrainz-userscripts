@@ -44,6 +44,7 @@ Easily submit tags from anywhere to Musicbrainz
 #### Taggregator Supported Sites
 * [Bandcamp](https://bandcamp.com)
 * [Discogs](https://www.discogs.com)
+* [Wikidata](https://www.wikidata.org)
 
 ## Attribution
 Icons used:

@@ -9,10 +9,16 @@
 // @updateURL     https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/taggregator.user.js
 // @supportURL    https://github.com/zabe40/musicbrainz-userscripts/issues
 // @grant         GM_xmlhttpRequest
+// @grant         GM_getValue
+// @grant         GM_setValue
 // @match         *://*.musicbrainz.org/release/*
 // @match         *://*.musicbrainz.org/release-group/*
+// @match         *://*.musicbrainz.org/artist/*
+// @match         *://*.musicbrainz.org/work/*
 // @match         *://*.musicbrainz.eu/release/*
 // @match         *://*.musicbrainz.eu/release-group/*
+// @match         *://*.musicbrainz.eu/artist/*
+// @match         *://*.musicbrainz.eu/work/*
 // ==/UserScript==
 
 (function () {
@@ -91,7 +97,7 @@
           })
   }
 
-  function fetchBandcampTags(url){
+  function fetchBandcampTags(url, entityType){
       return fetchAsHTML(url)
           .then((html) => {
               let results = [];
@@ -115,9 +121,10 @@
   }
 
   const bandcamp = { domain: "bandcamp.com",
-                            fetchTags: fetchBandcampTags,};
+                            fetchTags: fetchBandcampTags,
+                            supportedTypes: ["release"]};
 
-  function fetchDiscogsTags(url){
+  function fetchDiscogsTags(url, entityType){
       let urlObj = new URL(url);
       let path = urlObj.pathname.split('/');
       let APIURL = "https://api.discogs.com/";
@@ -131,9 +138,60 @@
   }
 
   const discogs = { domain: "discogs.com",
-                           fetchTags: fetchDiscogsTags};
+                           fetchTags: fetchDiscogsTags,
+                           supportedTypes: ["release-group","release"]};
 
-  const sites = [bandcamp, discogs];
+  const apiUrl = "http://www.wikidata.org/wiki/Special:EntityData/";
+  const fetchOptions = {headers: {"User-Agent": "Taggregator Userscript/" + GM_info.script.version + " +" + GM_info.script.homepageURL,
+                                      "Accept": "application/json",
+                                      "Accept-Encoding": "gzip,deflate",},
+                        responseType: 'json',};
+
+  function fetchWikidataTags(url, entityType){
+      let urlObj = new URL(url);
+      let entityID = urlObj.pathname.split('/')[2];
+      return fetchURL(apiUrl + entityID, fetchOptions)
+          .then((json) => {
+              const claims = json.response.entities[entityID].claims;
+              let promises = [];
+              if(claims.P136){
+                  for(const genre of claims.P136){
+                      let genreID = genre.mainsnak.datavalue.value.id;
+                      promises.push(fetchWikidataGenreName(genreID));
+                  }
+              }
+              return Promise.allSettled(promises).then((results) => {
+                  let genres = [];
+                  for (const result of results){
+                      if(result.status == "fulfilled"){
+                          genres.push(result.value);
+                      }
+                  }
+                  return genres;
+              });
+          });
+  }
+
+  function fetchWikidataGenreName(genreID){
+      const gmNamespace = "WikidataGenreNameCache:";
+      const cached = GM_getValue(gmNamespace + genreID);
+      if(cached){
+          return Promise.resolve(cached);
+      }else {
+          return fetchURL(apiUrl + genreID, fetchOptions)
+              .then((json) => {
+                  const name = json.response.entities[genreID].labels.en.value;
+                  GM_setValue(gmNamespace + genreID, name);
+                  return name;
+              });
+      }
+  }
+
+  const wikidata = { domain: "wikidata.org",
+                            fetchTags: fetchWikidataTags,
+                            supportedTypes: ["artist", "release-group","release","work"]};
+
+  const sites = [bandcamp, discogs, wikidata];
 
   function fixKeyframes(keyframesArray){
       keyframesArray.sort((a,b) => {
@@ -264,11 +322,15 @@
       container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
   }
 
-  function displaySiteNotSupportedIcon(listItem){
+  function displaySiteNotSupportedIcon(listItem, entityType){
       const container = getNewIconContainer(listItem);
 
       const host = getHostFromListItem(listItem);
-      container.title = `${host} not supported`;
+      let tooltip = `${host} not supported`;
+      if(entityType){
+          tooltip += ` for ${entityType} pages`;
+      }
+      container.title = tooltip;
 
       container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
       container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
@@ -310,6 +372,7 @@
       let promises = [];
       const button = document.querySelector("#taggregator-import-button");
       button.disabled = true;
+      const entityType = document.location.pathname.split('/')[1];
       for(const linkListItem of allLinkListItems){
           const url = linkListItem.querySelector("a").href;
           let matchedSite;
@@ -318,9 +381,9 @@
                   matchedSite = site;
               }
           }
-          if(matchedSite){
+          if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
               displayLoadingIcon(linkListItem);
-              promises.push(matchedSite.fetchTags(url)
+              promises.push(matchedSite.fetchTags(url, entityType)
                             .then((tags) => {
                                 displaySuccessIcon(linkListItem, tags);
                                 return tags;
@@ -332,7 +395,10 @@
                                 // to know if its an error later
                                 throw error;
                             }));
-          }else {
+          }else if(matchedSite){
+              displaySiteNotSupportedIcon(linkListItem, entityType);
+          }
+          else {
               displaySiteNotSupportedIcon(linkListItem);
           }
       }

@@ -1,6 +1,6 @@
 import { fetchAsHTML} from '../fetch.js';
 
-function fetchBandcampTags(url){
+function fetchBandcampTags(url, entityType){
     return fetchAsHTML(url)
         .then((html) => {
             let results = [];
@@ -24,4 +24,5 @@ function fetchBandcampTags(url){
 }
 
 export const bandcamp = { domain: "bandcamp.com",
-                          fetchTags: fetchBandcampTags,};
+                          fetchTags: fetchBandcampTags,
+                          supportedTypes: ["release"]};

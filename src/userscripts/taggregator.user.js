@@ -4,8 +4,9 @@ import successIcon from '../../assets/successIcon.svg';
 import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
 import { discogs} from '../taggregator-modules/discogs.js';
+import { wikidata} from '../taggregator-modules/wikidata.js';
 
-const sites = [bandcamp, discogs];
+const sites = [bandcamp, discogs, wikidata];
 
 function fixKeyframes(keyframesArray){
     keyframesArray.sort((a,b) => {
@@ -136,11 +137,15 @@ function displayErrorIcon(listItem, error){
     container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
 }
 
-function displaySiteNotSupportedIcon(listItem){
+function displaySiteNotSupportedIcon(listItem, entityType){
     const container = getNewIconContainer(listItem);
 
     const host = getHostFromListItem(listItem);
-    container.title = `${host} not supported`;
+    let tooltip = `${host} not supported`;
+    if(entityType){
+        tooltip += ` for ${entityType} pages`;
+    }
+    container.title = tooltip;
 
     container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
     container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
@@ -182,6 +187,7 @@ function importAllTags(){
     let promises = [];
     const button = document.querySelector("#taggregator-import-button");
     button.disabled = true;
+    const entityType = document.location.pathname.split('/')[1];
     for(const linkListItem of allLinkListItems){
         const url = linkListItem.querySelector("a").href;
         let matchedSite;
@@ -190,9 +196,9 @@ function importAllTags(){
                 matchedSite = site;
             }
         }
-        if(matchedSite){
+        if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
             displayLoadingIcon(linkListItem);
-            promises.push(matchedSite.fetchTags(url)
+            promises.push(matchedSite.fetchTags(url, entityType)
                           .then((tags) => {
                               displaySuccessIcon(linkListItem, tags);
                               return tags;
@@ -204,7 +210,10 @@ function importAllTags(){
                               // to know if its an error later
                               throw error;
                           }));
-        }else{
+        }else if(matchedSite){
+            displaySiteNotSupportedIcon(linkListItem, entityType);
+        }
+        else{
             displaySiteNotSupportedIcon(linkListItem);
         }
     }
