@@ -46,6 +46,7 @@ Easily submit tags from anywhere to Musicbrainz
 * [Discogs](https://www.discogs.com)
 * [Wikidata](https://www.wikidata.org)
 * [Apple Music](https://music.apple.com)
+* [Deezer](https://www.deezer.com)
 
 ## Attribution
 Icons used:
