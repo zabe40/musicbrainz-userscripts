@@ -15,10 +15,12 @@
 // @match         *://*.musicbrainz.org/release-group/*
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/work/*
+// @match         *://*.musicbrainz.org/recording/*
 // @match         *://*.musicbrainz.eu/release/*
 // @match         *://*.musicbrainz.eu/release-group/*
 // @match         *://*.musicbrainz.eu/artist/*
 // @match         *://*.musicbrainz.eu/work/*
+// @match         *://*.musicbrainz.eu/recording/*
 // ==/UserScript==
 
 (function () {
@@ -191,7 +193,32 @@
                             fetchTags: fetchWikidataTags,
                             supportedTypes: ["artist", "release-group","release","work"]};
 
-  const sites = [bandcamp, discogs, wikidata];
+  function fetchAppleMusicTags(url, entity){
+      let id;
+      switch (entity){
+      case "release":
+          id = "schema\\:music-album";
+          break;
+      case "artist":
+          id = "schema\\:music-group";
+          break;
+      case "recording":
+          id = "schema\\:song";
+          break;
+      }
+      return fetchAsHTML(url)
+          .then((html) => {
+              let json = JSON.parse(html.querySelector(`script#${id}`).innerText);
+              let genres = (entity == "recording") ? json.audio.genre : json.genre;
+              return genres.filter((genre) => genre != "Music");
+          });
+  }
+
+  const appleMusic = { domain: "music.apple.com",
+                              fetchTags: fetchAppleMusicTags,
+                              supportedTypes: ["release", "artist","recording"]};
+
+  const sites = [bandcamp, discogs, wikidata, appleMusic];
 
   function fixKeyframes(keyframesArray){
       keyframesArray.sort((a,b) => {
