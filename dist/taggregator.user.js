@@ -124,7 +124,7 @@
 
   const bandcamp = { domain: "bandcamp.com",
                             fetchTags: fetchBandcampTags,
-                            supportedTypes: ["release"]};
+                            supportedTypes: ["release","recording"]};
 
   function fetchDiscogsTags(url, entityType){
       let urlObj = new URL(url);

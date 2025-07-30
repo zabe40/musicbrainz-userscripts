@@ -25,4 +25,4 @@ function fetchBandcampTags(url, entityType){
 
 export const bandcamp = { domain: "bandcamp.com",
                           fetchTags: fetchBandcampTags,
-                          supportedTypes: ["release"]};
+                          supportedTypes: ["release","recording"]};
