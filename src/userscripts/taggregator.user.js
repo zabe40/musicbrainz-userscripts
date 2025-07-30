@@ -3,8 +3,9 @@ import siteUnsupportedIcon from '../../assets/siteUnsupportedIcon.svg';
 import successIcon from '../../assets/successIcon.svg';
 import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
+import { discogs} from '../taggregator-modules/discogs.js';
 
-const sites = [bandcamp];
+const sites = [bandcamp, discogs];
 
 function fixKeyframes(keyframesArray){
     keyframesArray.sort((a,b) => {

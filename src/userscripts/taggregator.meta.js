@@ -3,12 +3,12 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2024.7.22',
+    version: '2025.7.29',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
     supportURL: 'https://github.com/zabe40/musicbrainz-userscripts/issues',
-    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/release/*'])
+    match: cartesian(['*://*.musicbrainz.',['org','eu'],'/',['release', 'release-group'],'/*'])
         .map((array)=>{return array.join("");}),
     grant: 'GM_xmlhttpRequest'
 };

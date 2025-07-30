@@ -43,6 +43,7 @@ Easily submit tags from anywhere to Musicbrainz
 
 #### Taggregator Supported Sites
 * [Bandcamp](https://bandcamp.com)
+* [Discogs](https://www.discogs.com)
 
 ## Attribution
 Icons used:
