@@ -47,6 +47,9 @@ Easily submit tags from anywhere to Musicbrainz
 * [Wikidata](https://www.wikidata.org)
 * [Apple Music](https://music.apple.com)
 * [Deezer](https://www.deezer.com)
+* [Soundcloud](https://soundcloud.com)
+
+Have a site you think I should add? [Open an issue!](https://github.com/zabe40/musicbrainz-userscripts/issues)
 
 ## Attribution
 Icons used:

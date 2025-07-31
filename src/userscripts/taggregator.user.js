@@ -7,8 +7,9 @@ import { discogs} from '../taggregator-modules/discogs.js';
 import { wikidata} from '../taggregator-modules/wikidata.js';
 import { appleMusic} from '../taggregator-modules/appleMusic.js';
 import { deezer} from '../taggregator-modules/deezer.js';
+import { soundcloud} from '../taggregator-modules/soundcloud.js';
 
-const sites = [bandcamp, discogs, wikidata, appleMusic, deezer];
+const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud];
 
 function fixKeyframes(keyframesArray){
     keyframesArray.sort((a,b) => {
