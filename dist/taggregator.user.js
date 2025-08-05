@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2025.7.29
+// @version       2025.8.5
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -426,7 +426,24 @@
                            authenticate: spotifyAuthenticate,
                            redirectHandler: handleSpotifyAuthRedirect,};
 
-  const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify];
+  function fetchAllmusicTags(url, entity){
+      return fetchAsHTML(url)
+          .then((html) => {
+              let tags = [];
+              const pushTag = (aElement) => {
+                  tags.push(aElement.textContent);
+              };
+              html.querySelectorAll(".genre a").forEach(pushTag);
+              html.querySelectorAll(".styles a").forEach(pushTag);
+              return tags;
+          });
+  }
+
+  const allmusic = { domain: "allmusic.com",
+                            fetchTags: fetchAllmusicTags,
+                            supportedTypes: ["artist", "release-group"]};
+
+  const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify, allmusic];
 
   function fixKeyframes(keyframesArray){
       keyframesArray.sort((a,b) => {
