@@ -2,6 +2,7 @@ import errorIcon from '../../assets/errorIcon.svg';
 import siteUnsupportedIcon from '../../assets/siteUnsupportedIcon.svg';
 import successIcon from '../../assets/successIcon.svg';
 import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
+import { fetchAsHTML} from '../fetch.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
 import { discogs} from '../taggregator-modules/discogs.js';
 import { wikidata} from '../taggregator-modules/wikidata.js';
@@ -221,18 +222,59 @@ function importAllTags(){
         }
     }
     Promise.allSettled(promises).then((results) => {
-        button.disabled = false;
         // use a Set since a user can only submit a tag once
         let tags = new Set();
         for(const result of results){
             if(result.status == "fulfilled"){
                 for(const tag of result.value){
-                    tags.add(tag);
+                    tags.add(tag.toLowerCase());
                 }
             }
         }
-        addTagsAndFocus(tags);
+        let finalTags = new Set();
+        let aliasPromises = [];
+        for(const tag of tags){
+            aliasPromises.push(checkForGenreAlias(tag)
+                          .then((tag) => finalTags.add(tag)))
+        }
+        Promise.allSettled(aliasPromises).then(() => {
+            addTagsAndFocus(finalTags);
+            button.disabled = false;
+        });
     });
+}
+
+function checkForGenreAlias(tag){
+    const cacheNamespace = "MusicBrainzTagGenre:";
+    const cached = GM_getValue(cacheNamespace + tag);
+    const cacheLifetimeDays = 90;
+    if(cached){
+        if(cached.isGenre){
+            return Promise.resolve(cached.value);
+        }else if(Date.now() - cached.date < (1000 * 60 * 60 * 24 * cacheLifetimeDays)){
+            return Promise.resolve(cached.value);
+        }
+    }
+    const mbUrl = "https://musicbrainz.org/tag/";
+    return fetchAsHTML(mbUrl + tag)
+        .then((html) => {
+            let genre = html.querySelector("a[href^=\"/genre/\"]");
+            if(genre){
+                GM_setValue(cacheNamespace + tag, { value: genre.textContent,
+                                                    isGenre: true,
+                                                    date: Date.now()});
+                return genre.textContent;
+            }else{
+                GM_setValue(cacheNamespace + tag, { value: tag,
+                                                    isGenre: false,
+                                                    date: Date.now()})
+                return tag;
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            return tag;
+        });
 }
 
 function addImportTagsButton(){
