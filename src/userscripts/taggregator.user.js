@@ -1,6 +1,7 @@
 import errorIcon from '../../assets/errorIcon.svg';
 import siteUnsupportedIcon from '../../assets/siteUnsupportedIcon.svg';
 import successIcon from '../../assets/successIcon.svg';
+import authIcon from '../../assets/authIcon.svg'
 import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
 import { fetchAsHTML} from '../fetch.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
@@ -9,8 +10,9 @@ import { wikidata} from '../taggregator-modules/wikidata.js';
 import { appleMusic} from '../taggregator-modules/appleMusic.js';
 import { deezer} from '../taggregator-modules/deezer.js';
 import { soundcloud} from '../taggregator-modules/soundcloud.js';
+import { spotify} from '../taggregator-modules/spotify.js';
 
-const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud];
+const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify];
 
 function fixKeyframes(keyframesArray){
     keyframesArray.sort((a,b) => {
@@ -128,7 +130,16 @@ function displaySuccessIcon(listItem, tags){
     container.title = `loaded tags from ${host}: ${tags.toString()}`;
     
     container.innerHTML = decodeURIComponent(successIcon.substring(SVGPreambleLength));
-    container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
+    container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
+}
+
+function displayNeedsAuthIcon(listItem, authenticateFunction){
+    const container = getNewIconContainer(listItem);
+    const host = getHostFromListItem(listItem);
+    container.title = `Click to authenticate with ${host}`;
+    container.addEventListener("click", authenticateFunction);
+    container.innerHTML = decodeURIComponent(authIcon.substring(SVGPreambleLength))
+    container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-auth-icon");
 }
 
 function displayErrorIcon(listItem, error){
@@ -138,7 +149,7 @@ function displayErrorIcon(listItem, error){
     container.title = `${host}: ${error.message}`;
     
     container.innerHTML = decodeURIComponent(errorIcon.substring(SVGPreambleLength));
-    container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
+    container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
 }
 
 function displaySiteNotSupportedIcon(listItem, entityType){
@@ -152,7 +163,7 @@ function displaySiteNotSupportedIcon(listItem, entityType){
     container.title = tooltip;
 
     container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
-    container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
+    container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
 }
 
 function URLHostname(url){
@@ -201,19 +212,23 @@ function importAllTags(){
             }
         }
         if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
-            displayLoadingIcon(linkListItem);
-            promises.push(matchedSite.fetchTags(url, entityType)
-                          .then((tags) => {
-                              displaySuccessIcon(linkListItem, tags);
-                              return tags;
-                          })
-                          .catch((error) => {
-                              console.error(error);
-                              displayErrorIcon(linkListItem, error);
-                              // throw the error again since we need
-                              // to know if its an error later
-                              throw error;
-                          }));
+            if(matchedSite.needsAuthentication && matchedSite.needsAuthentication()){
+                displayNeedsAuthIcon(linkListItem, matchedSite.authenticate);
+            }else{
+                displayLoadingIcon(linkListItem);
+                promises.push(matchedSite.fetchTags(url, entityType)
+                              .then((tags) => {
+                                  displaySuccessIcon(linkListItem, tags);
+                                  return tags;
+                              })
+                              .catch((error) => {
+                                  console.error(error);
+                                  displayErrorIcon(linkListItem, error);
+                                  // throw the error again since we need
+                                  // to know if its an error later
+                                  throw error;
+                              }));
+            }
         }else if(matchedSite){
             displaySiteNotSupportedIcon(linkListItem, entityType);
         }
@@ -309,7 +324,16 @@ function addImportTagsButton(){
     linksHeader.insertAdjacentElement("beforebegin", importDiv);
 }
 
-
+const urlParams = new URLSearchParams(window.location.search);
+let auth = urlParams.get('taggregator-auth');
+for(const site of sites){
+    if(auth == site.domain){
+        site.redirectHandler()
+            .then(() => {
+                window.close();
+            });
+    }
+}
 addImportTagsButton();
 
 

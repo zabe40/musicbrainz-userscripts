@@ -48,6 +48,7 @@ Easily submit tags from anywhere to Musicbrainz
 * [Apple Music](https://music.apple.com)
 * [Deezer](https://www.deezer.com)
 * [Soundcloud](https://soundcloud.com)
+* [Spotify](https://spotify.com)
 
 Have a site you think I should add? [Open an issue!](https://github.com/zabe40/musicbrainz-userscripts/issues)
 
@@ -56,6 +57,7 @@ Icons used:
 * "[negative](https://thenounproject.com/icon/negative-2152786/)" by [Hassan Ali](https://thenounproject.com/ihassanaliawan/), used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) / Enlarged from original
 * "[Delete](https://thenounproject.com/icon/delete-680419/)" by [mikicon](https://thenounproject.com/mikicon/), used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) / Enlarged from original
 * "[tick](https://thenounproject.com/icon/tick-680417/)" by [mikicon](https://thenounproject.com/mikicon/), used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) / Enlarged from original
+* "[padlock](https://thenounproject.com/icon/padlock-7902390/)" by [IconsHome](https://thenounproject.com/creator/iconsHome/) used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 
 ## Development
 

@@ -11,11 +11,13 @@
 // @grant         GM_xmlhttpRequest
 // @grant         GM_getValue
 // @grant         GM_setValue
+// @match         *://*.musicbrainz.org/*
 // @match         *://*.musicbrainz.org/release/*
 // @match         *://*.musicbrainz.org/release-group/*
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/work/*
 // @match         *://*.musicbrainz.org/recording/*
+// @match         *://*.musicbrainz.eu/*
 // @match         *://*.musicbrainz.eu/release/*
 // @match         *://*.musicbrainz.eu/release-group/*
 // @match         *://*.musicbrainz.eu/artist/*
@@ -26,14 +28,17 @@
 (function () {
   'use strict';
 
-  var img$2 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 41.799999 41.799999' xml:space='preserve' width='41.799999' height='41.799999' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='50%2c42.9 36.1%2c29.1 29.1%2c36.1 42.9%2c50 29.1%2c63.9 36.1%2c70.9 50%2c57.1 63.9%2c70.9 70.9%2c63.9 57.1%2c50 70.9%2c36.1 63.9%2c29.1 ' transform='translate(-29.1%2c-29.1)' /%3e%3c/svg%3e";
-    var errorIcon = img$2;
+  var img$3 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 41.799999 41.799999' xml:space='preserve' width='41.799999' height='41.799999' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='50%2c42.9 36.1%2c29.1 29.1%2c36.1 42.9%2c50 29.1%2c63.9 36.1%2c70.9 50%2c57.1 63.9%2c70.9 70.9%2c63.9 57.1%2c50 70.9%2c36.1 63.9%2c29.1 ' transform='translate(-29.1%2c-29.1)' /%3e%3c/svg%3e";
+    var errorIcon = img$3;
 
-  var img$1 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 511.97501 117.746' enable-background='new 0 0 512 512' xml:space='preserve' width='511.97501' height='117.746' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3crect x='0' y='0' width='511.97501' height='117.746' /%3e%3c/svg%3e";
-    var siteUnsupportedIcon = img$1;
+  var img$2 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 511.97501 117.746' enable-background='new 0 0 512 512' xml:space='preserve' width='511.97501' height='117.746' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3crect x='0' y='0' width='511.97501' height='117.746' /%3e%3c/svg%3e";
+    var siteUnsupportedIcon = img$2;
 
-  var img = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 100 75.289574' xml:space='preserve' width='100' height='75.289574' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='44%2c69.5 75.9%2c37.6 68.8%2c30.5 44%2c55.3 31.2%2c42.6 24.1%2c49.6 ' transform='matrix(1.9305019%2c0%2c0%2c1.9305019%2c-46.525096%2c-58.880308)' /%3e%3c/svg%3e";
-    var successIcon = img;
+  var img$1 = "data:image/svg+xml,%3csvg version='1.1' x='0px' y='0px' viewBox='0 0 100 75.289574' xml:space='preserve' width='100' height='75.289574' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cpolygon points='44%2c69.5 75.9%2c37.6 68.8%2c30.5 44%2c55.3 31.2%2c42.6 24.1%2c49.6 ' transform='matrix(1.9305019%2c0%2c0%2c1.9305019%2c-46.525096%2c-58.880308)' /%3e%3c/svg%3e";
+    var successIcon = img$1;
+
+  var img = "data:image/svg+xml,%3c%3fxml version='1.0' encoding='UTF-8' standalone='no'%3f%3e%3csvg version='1.1' viewBox='-5.0 -10.0 110.0 135.0' id='svg1' sodipodi:docname='authIcon.svg' inkscape:version='1.4.2 (ebf0e940d0%2c 2025-05-08)' xmlns:inkscape='http://www.inkscape.org/namespaces/inkscape' xmlns:sodipodi='http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3e %3cdefs id='defs1' /%3e %3csodipodi:namedview id='namedview1' pagecolor='%23505050' bordercolor='%23eeeeee' borderopacity='1' inkscape:showpageshadow='0' inkscape:pageopacity='0' inkscape:pagecheckerboard='0' inkscape:deskcolor='%23505050' inkscape:zoom='3.6148148' inkscape:cx='55.05123' inkscape:cy='40.665984' inkscape:window-width='1366' inkscape:window-height='690' inkscape:window-x='0' inkscape:window-y='0' inkscape:window-maximized='1' inkscape:current-layer='svg1' /%3e %3cpath d='m 91.552121%2c48.498344 h -3.28707 V 28.25021 c 0%2c-20.9718279 -16.967796%2c-38.250215 -38.250215%2c-38.250215 -21.15084%2c0 -38.250216%2c17.1468071 -38.250216%2c38.250215 l 0.006%2c20.248134 H 8.4415967 c -4.9486607%2c0 -9.00073528%2c4.052076 -9.00073528%2c9.000735 V 74.419445 C -0.55913858%2c102.36659 22.074279%2c125 50.021416%2c125 c 27.898185%2c1e-5 50.537724%2c-22.63341 50.537724%2c-50.580555 l -0.006%2c-16.920366 c 0%2c-4.948659 -4.004339%2c-9.000735 -9.000736%2c-9.000735 z M 54.521323%2c88.774291 v 12.192329 c 0%2c2.47434 -2.026037%2c4.50038 -4.500367%2c4.50038 -2.522067%2c0 -4.500368%2c-2.02605 -4.500368%2c-4.50038 V 88.774291 c -3.962415%2c-1.757062 -6.747644%2c-5.713663 -6.747644%2c-10.303689 0%2c-6.209693 5.038319%2c-11.248012 11.248012%2c-11.248012 6.209694%2c0 11.248011%2c5.038319 11.248011%2c11.248012 0%2c4.590026 -2.791042%2c8.546474 -6.747644%2c10.303689 z M 70.269702%2c48.498344 H 29.771903 V 28.25021 c 0%2c-11.206089 9.042658%2c-20.2481341 20.248135%2c-20.2481341 11.433295%2c0 20.248134%2c9.3174471 20.248134%2c20.2481341 z' id='path1' style='stroke-width:1.53001' /%3e%3c/svg%3e";
+    var authIcon = img;
 
   // Adapted from https://stackoverflow.com/a/46012210
 
@@ -283,7 +288,145 @@
                               fetchTags: fetchSoundcloudTags,
                               supportedTypes: ["release", "recording"]};
 
-  const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud];
+  const clientId = '2cd89e83465c42ecbc9fec4e01f84958';
+
+  async function spotifyAuthenticate(){
+      console.log("authenticating spotify");
+      const generateRandomString = (length) => {
+          const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          const values = crypto.getRandomValues(new Uint8Array(length));
+          return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+      };
+
+      const codeVerifier = generateRandomString(64);
+
+      const sha256 = async (plain) => {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(plain);
+          return window.crypto.subtle.digest('SHA-256', data);
+      };
+
+      const base64encode = (input) => {
+          return btoa(String.fromCharCode(...new Uint8Array(input)))
+              .replace(/=/g, '')
+              .replace(/\+/g, '-')
+              .replace(/\//g, '_');
+      };
+
+      const hashed = await sha256(codeVerifier);
+      const codeChallenge = base64encode(hashed);
+
+      const redirectUri = window.location.origin + "/?taggregator-auth=spotify.com";
+
+      const scope = '';
+      const authUrl = new URL("https://accounts.spotify.com/authorize");
+
+      GM_setValue('spotifyAPICodeVerifier', codeVerifier);
+
+      const params = {
+          response_type: 'code',
+          client_id: clientId,
+          scope: scope,
+          code_challenge_method: 'S256',
+          code_challenge: codeChallenge,
+          redirect_uri: redirectUri,
+      };
+
+      authUrl.search = new URLSearchParams(params).toString();
+      window.open(authUrl.toString(), '_blank').focus();
+
+  }
+
+  function handleSpotifyAuthRedirect(){
+      const urlParams = new URLSearchParams(window.location.search);
+      let code = urlParams.get('code');
+      const redirectUri = window.location.origin + "/?taggregator-auth=spotify.com";
+      console.log(redirectUri);
+      const getToken = async (code) => {
+          // stored in the previous step
+          const codeVerifier = GM_getValue('spotifyAPICodeVerifier');
+          const url = "https://accounts.spotify.com/api/token";
+          const payload = {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                  client_id: clientId,
+                  grant_type: 'authorization_code',
+                  code: code,
+                  redirect_uri: redirectUri,
+                  code_verifier: codeVerifier,
+              }),
+          };
+          const body = await fetch(url, payload);
+          const response = await body.json();
+          GM_setValue('spotifyAPIAccessToken', response.access_token);
+          GM_setValue('spotifyAPIAccessTokenExpiry', Date.now() + response.expires_in);
+          GM_setValue('spotifyAPIRefreshToken', response.refresh_token);
+      };
+      return getToken(code);
+  }
+
+  function spotifyNeedsAuthentication(){
+      return !GM_getValue('spotifyAPIAccessToken');
+  }
+
+  function spotifyRefreshIfNeeded(){
+      const getRefreshToken = async () => {
+
+          // refresh token that has been previously stored
+          const refreshToken = GM_getValue("spotifyAPIRefreshToken");
+          const url = "https://accounts.spotify.com/api/token";
+
+          const payload = {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: new URLSearchParams({
+                  grant_type: 'refresh_token',
+                  refresh_token: refreshToken,
+                  client_id: clientId
+              }),
+          };
+          const body = await fetch(url, payload);
+          const response = await body.json();
+
+          GM_setValue('spotifyAPIAccessToken', response.access_token);
+          GM_setValue('spotifyAPIAccessTokenExpiry', Date.now() + response.expires_in);
+          if (response.refresh_token) {
+              GM_setValue('spotifyAPIRefreshToken', response.refresh_token);
+          }
+      };
+      if(Date.now() >= GM_getValue('spotifyAPIAccessTokenExpiry')){
+          return getRefreshToken();
+      }else {
+          return Promise.resolve();
+      }
+  }
+
+  function fetchSpotifyTags(url, entity){
+      const apiURL = "https://api.spotify.com/v1/artists/";
+      let id = new URL(url).pathname.split('/')[2];
+      const headers = new Headers();
+      return spotifyRefreshIfNeeded()
+          .then(() => {
+              headers.append("Authorization", "Bearer " + GM_getValue('spotifyAPIAccessToken'));
+              return fetch(apiURL+id, {headers: headers});
+          })
+          .then((response) => response.json())
+          .then((data) => data.genres);
+  }
+
+  const spotify = { domain: "spotify.com",
+                           fetchTags: fetchSpotifyTags,
+                           supportedTypes: ["artist"],
+                           needsAuthentication: spotifyNeedsAuthentication,
+                           authenticate: spotifyAuthenticate,
+                           redirectHandler: handleSpotifyAuthRedirect,};
+
+  const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify];
 
   function fixKeyframes(keyframesArray){
       keyframesArray.sort((a,b) => {
@@ -401,7 +544,16 @@
       container.title = `loaded tags from ${host}: ${tags.toString()}`;
       
       container.innerHTML = decodeURIComponent(successIcon.substring(SVGPreambleLength));
-      container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
+      container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-success-icon");
+  }
+
+  function displayNeedsAuthIcon(listItem, authenticateFunction){
+      const container = getNewIconContainer(listItem);
+      const host = getHostFromListItem(listItem);
+      container.title = `Click to authenticate with ${host}`;
+      container.addEventListener("click", authenticateFunction);
+      container.innerHTML = decodeURIComponent(authIcon.substring(SVGPreambleLength));
+      container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-auth-icon");
   }
 
   function displayErrorIcon(listItem, error){
@@ -411,7 +563,7 @@
       container.title = `${host}: ${error.message}`;
       
       container.innerHTML = decodeURIComponent(errorIcon.substring(SVGPreambleLength));
-      container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
+      container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-error-icon");
   }
 
   function displaySiteNotSupportedIcon(listItem, entityType){
@@ -425,7 +577,7 @@
       container.title = tooltip;
 
       container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
-      container.firstChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
+      container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
   }
 
   function URLHostname(url){
@@ -474,19 +626,23 @@
               }
           }
           if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
-              displayLoadingIcon(linkListItem);
-              promises.push(matchedSite.fetchTags(url, entityType)
-                            .then((tags) => {
-                                displaySuccessIcon(linkListItem, tags);
-                                return tags;
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                                displayErrorIcon(linkListItem, error);
-                                // throw the error again since we need
-                                // to know if its an error later
-                                throw error;
-                            }));
+              if(matchedSite.needsAuthentication && matchedSite.needsAuthentication()){
+                  displayNeedsAuthIcon(linkListItem, matchedSite.authenticate);
+              }else {
+                  displayLoadingIcon(linkListItem);
+                  promises.push(matchedSite.fetchTags(url, entityType)
+                                .then((tags) => {
+                                    displaySuccessIcon(linkListItem, tags);
+                                    return tags;
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    displayErrorIcon(linkListItem, error);
+                                    // throw the error again since we need
+                                    // to know if its an error later
+                                    throw error;
+                                }));
+              }
           }else if(matchedSite){
               displaySiteNotSupportedIcon(linkListItem, entityType);
           }
@@ -582,7 +738,16 @@
       linksHeader.insertAdjacentElement("beforebegin", importDiv);
   }
 
-
+  const urlParams = new URLSearchParams(window.location.search);
+  let auth = urlParams.get('taggregator-auth');
+  for(const site of sites){
+      if(auth == site.domain){
+          site.redirectHandler()
+              .then(() => {
+                  window.close();
+              });
+      }
+  }
   addImportTagsButton();
 
 })();
