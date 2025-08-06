@@ -635,36 +635,38 @@
       button.disabled = true;
       const entityType = document.location.pathname.split('/')[1];
       for(const linkListItem of allLinkListItems){
-          const url = linkListItem.querySelector("a").href;
-          let matchedSite;
-          for(const site of sites){
-              if(matchesDomain(url, site.domain)){
-                  matchedSite = site;
+          if(!linkListItem.closest("ul[class*=jesus2099_all-links]")){
+              const url = linkListItem.querySelector("a").href;
+              let matchedSite;
+              for(const site of sites){
+                  if(matchesDomain(url, site.domain)){
+                      matchedSite = site;
+                  }
               }
-          }
-          if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
-              if(matchedSite.needsAuthentication && matchedSite.needsAuthentication()){
-                  displayNeedsAuthIcon(linkListItem, matchedSite.authenticate);
-              }else {
-                  displayLoadingIcon(linkListItem);
-                  promises.push(matchedSite.fetchTags(url, entityType)
-                                .then((tags) => {
-                                    displaySuccessIcon(linkListItem, tags);
-                                    return tags;
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                    displayErrorIcon(linkListItem, error);
-                                    // throw the error again since we need
-                                    // to know if its an error later
-                                    throw error;
-                                }));
+              if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
+                  if(matchedSite.needsAuthentication && matchedSite.needsAuthentication()){
+                      displayNeedsAuthIcon(linkListItem, matchedSite.authenticate);
+                  }else {
+                      displayLoadingIcon(linkListItem);
+                      promises.push(matchedSite.fetchTags(url, entityType)
+                                    .then((tags) => {
+                                        displaySuccessIcon(linkListItem, tags);
+                                        return tags;
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                        displayErrorIcon(linkListItem, error);
+                                        // throw the error again since we need
+                                        // to know if its an error later
+                                        throw error;
+                                    }));
+                  }
+              }else if(matchedSite){
+                  displaySiteNotSupportedIcon(linkListItem, entityType);
               }
-          }else if(matchedSite){
-              displaySiteNotSupportedIcon(linkListItem, entityType);
-          }
-          else {
-              displaySiteNotSupportedIcon(linkListItem);
+              else {
+                  displaySiteNotSupportedIcon(linkListItem);
+              }
           }
       }
       Promise.allSettled(promises).then((results) => {
@@ -681,7 +683,7 @@
           let aliasPromises = [];
           for(const tag of tags){
               aliasPromises.push(checkForGenreAlias(tag)
-                            .then((tag) => finalTags.add(tag)));
+                                 .then((tag) => finalTags.add(tag)));
           }
           Promise.allSettled(aliasPromises).then(() => {
               addTagsAndFocus(finalTags);
@@ -752,6 +754,10 @@
       importDiv.style.justifyContent = "center";
       importDiv.appendChild(importButton);
 
+      let tagForm = document.querySelector("form#tag-form");
+      if(tagForm){
+          tagForm.insertAdjacentElement("afterend", importDiv);
+      }
       linksHeader.insertAdjacentElement("beforebegin", importDiv);
   }
 
