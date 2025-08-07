@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2025.8.6
+// @version       2025.8.6.1
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -644,10 +644,10 @@
       const button = document.querySelector("#taggregator-import-button");
       button.disabled = true;
       const entityType = document.location.pathname.split('/')[1];
-      const ameSidebar = document.querySelector("#ame-sidebar").parentNode;
+      const ameSidebar = document.querySelector("#ame-sidebar");
       for(const linkListItem of allLinkListItems){
           if(linkListItem.closest("ul[class*=jesus2099_all-links]"));
-          else if(ameSidebar && hasAncestor(linkListItem, ameSidebar));
+          else if(ameSidebar && hasAncestor(linkListItem, ameSidebar.parentNode));
           else {
               const url = linkListItem.querySelector("a").href;
               let matchedSite;
