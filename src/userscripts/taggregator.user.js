@@ -189,11 +189,15 @@ function addTagsAndFocus(tags){
     }
     if(input){
         setReactInputValue(input, input.value + tagString);
-        document.querySelector("#tag-form button").click();
+        if(GM_getValue("settings:submitTagsAutomatically", true)){
+            document.querySelector("#tag-form button").click();
+        }
         input.focus();
     }else if(textarea){
         setReactTextareaValue(textarea, textarea.value + tagString);
-        document.querySelector("#tag-form button").click();
+        if(GM_getValue("settings:submitTagsAutomatically", true)){
+            document.querySelector("#tag-form button").click();
+        }
         textarea.focus();
     }
 }
@@ -344,6 +348,37 @@ function addImportTagsButton(){
     linksHeader.insertAdjacentElement("beforebegin", importDiv);
 }
 
+function initializeSettings(){
+    const sidebar = document.querySelector("div#sidebar");
+    if(sidebar){
+        const containerDiv = document.createElement('div');
+        containerDiv.id = "taggregator-settings";
+
+        const header = document.createElement('h2');
+        header.innerText = "Taggregator Settings"
+        containerDiv.appendChild(header);
+
+        const fieldSet = document.createElement('fieldset');
+        containerDiv.appendChild(fieldSet);
+
+        const label = document.createElement('label');
+        label.innerText = "Submit tags automatically"
+        fieldSet.appendChild(label);
+
+        const input = document.createElement('input');
+        input.type = "checkbox";
+        input.id = "taggregator-submit-automatically";
+        input.name = "submit-automatically";
+        input.defaultChecked = GM_getValue("settings:submitTagsAutomatically", true);
+        input.addEventListener('change', (event) => {
+            GM_setValue("settings:submitTagsAutomatically", event.target.checked);
+        });
+        label.insertAdjacentElement("afterbegin",input);
+
+        sidebar.insertAdjacentElement("beforeend", containerDiv)
+    }
+}
+
 const urlParams = new URLSearchParams(window.location.search);
 let auth = urlParams.get('taggregator-auth');
 for(const site of sites){
@@ -354,6 +389,6 @@ for(const site of sites){
             });
     }
 }
+
 addImportTagsButton();
-
-
+initializeSettings();
