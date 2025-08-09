@@ -1,7 +1,8 @@
 import errorIcon from '../../assets/errorIcon.svg';
 import siteUnsupportedIcon from '../../assets/siteUnsupportedIcon.svg';
 import successIcon from '../../assets/successIcon.svg';
-import authIcon from '../../assets/authIcon.svg'
+import authIcon from '../../assets/authIcon.svg';
+import siteDisabledIcon from '../../assets/siteDisabled.svg';
 import { setReactInputValue, setReactTextareaValue } from '@kellnerd/es-utils/dom/react.js';
 import { fetchAsHTML} from '../fetch.js';
 import { bandcamp} from '../taggregator-modules/bandcamp.js';
@@ -75,6 +76,14 @@ function addCSSRules(){
   fill:grey;
 }
 
+div#taggregator-settings details label{
+  background-position: 0 2px;
+  background-repeat: no-repeat;
+  margin-bottom: 2px;
+  padding: 4px 0 0 22px;
+  min-height: 14px;
+}
+
 `)
         .catch((error) => {
             console.error("Failed to replace styles:", error);
@@ -138,7 +147,7 @@ function displayNeedsAuthIcon(listItem, authenticateFunction){
     const container = getNewIconContainer(listItem);
     const host = getHostFromListItem(listItem);
     container.title = `Click to authenticate with ${host}`;
-    container.addEventListener("click", authenticateFunction);
+    container.addEventListener("click", authenticateFunction, {once: true});
     container.innerHTML = decodeURIComponent(authIcon.substring(SVGPreambleLength))
     container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-auth-icon");
 }
@@ -165,6 +174,16 @@ function displaySiteNotSupportedIcon(listItem, entityType){
 
     container.innerHTML = decodeURIComponent(siteUnsupportedIcon.substring(SVGPreambleLength));
     container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-unsupported-icon");
+}
+
+function displaySiteDisabledIcon(listItem, site, listenerCallback){
+    const container = getNewIconContainer(listItem);
+
+    const host = getHostFromListItem(listItem);
+    container.title = `${host} disabled: click to fetch tags anyway`;
+    container.innerHTML = decodeURIComponent(siteDisabledIcon.substring(SVGPreambleLength));
+    container.firstElementChild.setAttribute("class", "taggregator-status-icon taggregator-disabled-icon");
+    container.addEventListener("click", listenerCallback, {once: true});
 }
 
 function URLHostname(url){
@@ -233,6 +252,24 @@ function importAllTags(){
             if(matchedSite && matchedSite.supportedTypes.includes(entityType)){
                 if(matchedSite.needsAuthentication && matchedSite.needsAuthentication()){
                     displayNeedsAuthIcon(linkListItem, matchedSite.authenticate);
+                }else if(!GM_getValue("settings:enableSite:" + matchedSite.name, true)){
+                    displaySiteDisabledIcon(linkListItem, matchedSite, (event) => {
+                        matchedSite.fetchTags(url, entityType)
+                            .then((tags) => {
+                                displaySuccessIcon(linkListItem, tags);
+                                let set = new Set(tags.map((tag) => tag.toLowerCase()));
+                                return Promise.allSettled(Array.from(set,checkForGenreAlias));
+                            })
+                            .then((results) => results.filter((result) => result.status == "fulfilled"))
+                            .then((successes) => successes.map((success) => success.value))
+                            .then((tags) => {
+                                addTagsAndFocus(tags);
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                                displayErrorIcon(linkListItem, error);
+                            })
+                    });
                 }else{
                     displayLoadingIcon(linkListItem);
                     promises.push(matchedSite.fetchTags(url, entityType)
@@ -250,33 +287,25 @@ function importAllTags(){
                 }
             }else if(matchedSite){
                 displaySiteNotSupportedIcon(linkListItem, entityType);
-            }
-            else{
+            }else{
                 displaySiteNotSupportedIcon(linkListItem);
             }
         }
     }
-    Promise.allSettled(promises).then((results) => {
-        // use a Set since a user can only submit a tag once
-        let tags = new Set();
-        for(const result of results){
-            if(result.status == "fulfilled"){
-                for(const tag of result.value){
-                    tags.add(tag.toLowerCase());
-                }
-            }
-        }
-        let finalTags = new Set();
-        let aliasPromises = [];
-        for(const tag of tags){
-            aliasPromises.push(checkForGenreAlias(tag)
-                               .then((tag) => finalTags.add(tag)))
-        }
-        Promise.allSettled(aliasPromises).then(() => {
-            addTagsAndFocus(finalTags);
+    Promise.allSettled(promises)
+        .then((results) => results.filter((result) => result.status == "fulfilled"))
+        .then((successes) => successes.map((success) => success.value))
+        .then((tagLists) => {
+            // use a Set since a user can only submit a tag once
+            let tags = new Set(tagLists.flat().map((tag) => tag.toLowerCase()));
+            return Promise.allSettled(Array.from(tags,checkForGenreAlias));
+        })
+        .then((results) => results.filter((result) => result.status == "fulfilled"))
+        .then((successes) => successes.map((success) => success.value))
+        .then((tags) => {
+            addTagsAndFocus(tags);
             button.disabled = false;
         });
-    });
 }
 
 function checkForGenreAlias(tag){
@@ -302,7 +331,7 @@ function checkForGenreAlias(tag){
             }else{
                 GM_setValue(cacheNamespace + tag, { value: tag,
                                                     isGenre: false,
-                                                    date: Date.now()})
+                                                    date: Date.now()});
                 return tag;
             }
         })
@@ -375,6 +404,37 @@ function initializeSettings(){
         });
         label.insertAdjacentElement("afterbegin",input);
 
+        const details = document.createElement('details');
+        containerDiv.appendChild(details);
+
+        const summary = document.createElement('summary');
+        summary.innerText = "Enable Sites";
+        details.appendChild(summary);
+
+        const enableSitesFieldSet = document.createElement('fieldset');
+        details.appendChild(enableSitesFieldSet);
+
+        sites.sort((site1, site2) => site1.name.localeCompare(site2.name));
+        for(const site of sites){
+            const label = document.createElement('label');
+            label.innerText = site.name;
+            label.className = site.faviconClass;
+            label.style.backgroundRepeat = "no-repeat";
+            label.style.paddding = "4px 0 0 22px";
+
+            const siteNameSanitized = site.name.replace(/\W+/,"-").toLowerCase();
+            const input = document.createElement('input');
+            input.type = "checkbox";
+            input.id = "taggregator-enable-" + siteNameSanitized;
+            input.name = "enable-" + siteNameSanitized;
+            input.defaultChecked = GM_getValue("settings:enableSite:" + site.name, true);
+            input.addEventListener('change', (event) => {
+                GM_setValue("settings:enableSite:" + site.name, event.target.checked);
+            });
+            label.insertAdjacentElement("afterbegin", input);
+            enableSitesFieldSet.appendChild(label);
+            enableSitesFieldSet.appendChild(document.createElement('br'));
+        }
         sidebar.insertAdjacentElement("beforeend", containerDiv)
     }
 }

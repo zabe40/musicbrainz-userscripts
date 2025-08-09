@@ -23,4 +23,6 @@ function fetchAppleMusicTags(url, entity){
 
 export const appleMusic = { domain: "music.apple.com",
                             fetchTags: fetchAppleMusicTags,
-                            supportedTypes: ["release", "artist","recording"]}
+                            supportedTypes: ["release", "artist","recording"],
+                            name: "Apple Music",
+                            faviconClass: "applemusic-favicon",}

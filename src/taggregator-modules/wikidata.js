@@ -48,4 +48,6 @@ function fetchWikidataGenreName(genreID){
 
 export const wikidata = { domain: "wikidata.org",
                           fetchTags: fetchWikidataTags,
-                          supportedTypes: ["artist", "release-group","release","work"]};
+                          supportedTypes: ["artist", "release-group","release","work"],
+                          name: "Wikidata",
+                          faviconClass: "wikidata-favicon",};

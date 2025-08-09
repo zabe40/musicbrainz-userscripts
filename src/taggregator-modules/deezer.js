@@ -12,4 +12,6 @@ function fetchDeezerTags(url, entityType){
 
 export const deezer = { domain: "deezer.com",
                         fetchTags: fetchDeezerTags,
-                        supportedTypes: ["release"]}
+                        supportedTypes: ["release"],
+                        name: "Deezer",
+                        faviconClass: "deezer-favicon",};

@@ -13,4 +13,6 @@ function fetchDiscogsTags(url, entityType){
 
 export const discogs = { domain: "discogs.com",
                          fetchTags: fetchDiscogsTags,
-                         supportedTypes: ["release-group","release"]};
+                         supportedTypes: ["release-group","release"],
+                         name: "Discogs",
+                         faviconClass: "discogs-favicon",};

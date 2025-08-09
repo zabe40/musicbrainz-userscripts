@@ -25,4 +25,6 @@ function fetchBandcampTags(url, entityType){
 
 export const bandcamp = { domain: "bandcamp.com",
                           fetchTags: fetchBandcampTags,
-                          supportedTypes: ["release","recording"]};
+                          supportedTypes: ["release","recording"],
+                          name: "Bandcamp",
+                          faviconClass: "bandcamp-favicon",};

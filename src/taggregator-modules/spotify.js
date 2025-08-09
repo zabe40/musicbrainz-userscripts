@@ -132,6 +132,8 @@ function fetchSpotifyTags(url, entity){
 export const spotify = { domain: "spotify.com",
                          fetchTags: fetchSpotifyTags,
                          supportedTypes: ["artist"],
+                         name: "Spotify",
+                         faviconClass: "spotify-favicon",
                          needsAuthentication: spotifyNeedsAuthentication,
                          authenticate: spotifyAuthenticate,
-                         redirectHandler: handleSpotifyAuthRedirect,}
+                         redirectHandler: handleSpotifyAuthRedirect,};

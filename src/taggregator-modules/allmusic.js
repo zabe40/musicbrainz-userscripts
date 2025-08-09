@@ -15,4 +15,6 @@ function fetchAllmusicTags(url, entity){
 
 export const allmusic = { domain: "allmusic.com",
                           fetchTags: fetchAllmusicTags,
-                          supportedTypes: ["artist", "release-group"]}
+                          supportedTypes: ["artist", "release-group"],
+                          name: "AllMusic",
+                          faviconClass: "allmusic-favicon",}

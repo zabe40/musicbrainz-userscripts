@@ -49,4 +49,6 @@ function parseSoundcloudTagList(string){
 
 export const soundcloud = { domain: "soundcloud.com",
                             fetchTags: fetchSoundcloudTags,
-                            supportedTypes: ["release", "recording"]}
+                            supportedTypes: ["release", "recording"],
+                            name: "Soundcloud",
+                            faviconClass: "soundcloud-favicon",};
