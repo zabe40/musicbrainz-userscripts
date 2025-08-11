@@ -689,6 +689,7 @@ div#taggregator-settings details label{
       for(const linkListItem of allLinkListItems){
           if(linkListItem.closest("ul[class*=jesus2099_all-links]"));
           else if(ameSidebar && hasAncestor(linkListItem, ameSidebar.parentNode));
+          else if(linkListItem.querySelector("a") == null);
           else {
               const url = linkListItem.querySelector("a").href;
               let matchedSite;
