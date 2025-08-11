@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2025.8.8
+// @version       2025.8.11
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
