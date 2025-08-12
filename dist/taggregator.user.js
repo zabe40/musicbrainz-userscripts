@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2025.8.11
+// @version       2025.8.11.1
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -688,6 +688,8 @@ div#taggregator-settings details label{
       const ameSidebar = document.querySelector("#ame-sidebar");
       for(const linkListItem of allLinkListItems){
           if(linkListItem.closest("ul[class*=jesus2099_all-links]"));
+          else if(linkListItem.closest("[class*=jesus2099_all-links_wd]")
+                  && !linkListItem.classList.contains("wikidata-favicon"));
           else if(ameSidebar && hasAncestor(linkListItem, ameSidebar.parentNode));
           else if(linkListItem.querySelector("a") == null);
           else {

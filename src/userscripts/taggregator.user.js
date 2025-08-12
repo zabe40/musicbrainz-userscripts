@@ -240,6 +240,8 @@ function importAllTags(){
     const ameSidebar = document.querySelector("#ame-sidebar");
     for(const linkListItem of allLinkListItems){
         if(linkListItem.closest("ul[class*=jesus2099_all-links]")){}
+        else if(linkListItem.closest("[class*=jesus2099_all-links_wd]")
+                && !linkListItem.classList.contains("wikidata-favicon")){}
         else if(ameSidebar && hasAncestor(linkListItem, ameSidebar.parentNode)){}
         else if(linkListItem.querySelector("a") == null){}
         else{
