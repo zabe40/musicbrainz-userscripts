@@ -463,7 +463,7 @@
                             faviconClass: "allmusic-favicon",};
 
   function fetchBeatportTags(url, entity){
-      if(entity == "label"){
+      if(entity == "label" || entity == "artist"){
           url += "/tracks?page=1&per_page=150";
       }
       return fetchAsHTML(url)
@@ -472,6 +472,7 @@
               let json = JSON.parse(html.querySelector("script#__NEXT_DATA__").innerText);
               switch (entity){
               case "release":
+              case "artist":
               case "label":
                   for(const query of json.props.pageProps.dehydratedState.queries){
                       if(query.queryKey[0] == "tracks"){
@@ -508,7 +509,7 @@
 
   const beatport = { domain: "beatport.com",
                             fetchTags: fetchBeatportTags,
-                            supportedTypes: ["release", "recording","label"],
+                            supportedTypes: ["release", "recording","artist", "label"],
                             name: "Beatport",
                             faviconClass: "beatport-favicon"};
 
