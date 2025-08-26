@@ -14,8 +14,9 @@ import { soundcloud} from '../taggregator-modules/soundcloud.js';
 import { spotify} from '../taggregator-modules/spotify.js';
 import { allmusic} from '../taggregator-modules/allmusic.js';
 import { beatport} from '../taggregator-modules/beatport.js';
+import { vocadb} from '../taggregator-modules/vocadb.js';
 
-const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify, allmusic, beatport];
+const sites = [bandcamp, discogs, wikidata, appleMusic, deezer, soundcloud, spotify, allmusic, beatport, vocadb];
 
 function fixKeyframes(keyframesArray){
     keyframesArray.sort((a,b) => {

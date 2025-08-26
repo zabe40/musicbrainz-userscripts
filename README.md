@@ -50,6 +50,8 @@ Easily submit tags from anywhere to Musicbrainz
 * [Soundcloud](https://soundcloud.com)
 * [Spotify](https://spotify.com)
 * [AllMusic](https://www.allmusic.com)
+* [Beatport](https://www.beatport.com)
+* [VocaDB](https://vocadb.net)
 
 Have a site you think I should add? [Open an issue!](https://github.com/zabe40/musicbrainz-userscripts/issues)
 
