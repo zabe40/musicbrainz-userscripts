@@ -3,7 +3,7 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2025.8.25',
+    version: '2025.8.26',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
@@ -16,5 +16,10 @@ const metadata = {
 // TODO
 // add screenshots/gifs to README
 // maybe maintain our own mapping of aliases to genres
+// add button to clear cache
+// prevent from running on unsupported pages
+// setting to only submit accepted genres: aerozol approved
+// tag mapping customizable by user (split map value on comma)
+// tag blacklist
 
 export default metadata;
