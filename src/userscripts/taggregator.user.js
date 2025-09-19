@@ -380,6 +380,7 @@ function addImportTagsButton(){
         tagForm.insertAdjacentElement("afterend", importDiv);
     }
     linksHeader.insertAdjacentElement("beforebegin", importDiv);
+    initializeSettings();
 }
 
 function initializeSettings(){
@@ -456,4 +457,3 @@ for(const site of sites){
 }
 
 addImportTagsButton();
-initializeSettings();

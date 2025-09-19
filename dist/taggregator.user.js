@@ -1382,6 +1382,7 @@ div#taggregator-settings details label{
           tagForm.insertAdjacentElement("afterend", importDiv);
       }
       linksHeader.insertAdjacentElement("beforebegin", importDiv);
+      initializeSettings();
   }
 
   function initializeSettings(){
@@ -1458,6 +1459,5 @@ div#taggregator-settings details label{
   }
 
   addImportTagsButton();
-  initializeSettings();
 
 })();
