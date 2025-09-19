@@ -3,7 +3,7 @@ import { cartesian} from '@agarimo/cartesian';
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2025.8.26',
+    version: '2025.9.18',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',

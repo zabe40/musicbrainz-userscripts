@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Taggregator
-// @version       2025.8.26
+// @version       2025.9.18
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Easily submit tags from anywhere to Musicbrainz
@@ -1207,7 +1207,8 @@ div#taggregator-settings details label{
       const input = document.querySelector("input.tag-input");
       const textarea = document.querySelector("#tag-form textarea");
       let tagString = "";
-      for(const tag of tags){
+      const uniqueTags = new Set(tags);
+      for(const tag of uniqueTags){
           tagString += tag + ",";
       }
       if(input){

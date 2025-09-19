@@ -205,7 +205,8 @@ function addTagsAndFocus(tags){
     const input = document.querySelector("input.tag-input")
     const textarea = document.querySelector("#tag-form textarea");
     let tagString = "";
-    for(const tag of tags){
+    const uniqueTags = new Set(tags);
+    for(const tag of uniqueTags){
         tagString += tag + ",";
     }
     if(input){
