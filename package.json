@@ -16,7 +16,8 @@
         "src/*.js"
     ],
     "devDependencies": {
-        "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler#v0.8.4"
+        "@kellnerd/userscript-bundler": "github:kellnerd/userscript-bundler#v0.8.4",
+        "directory-import": "^3.3.2"
     },
     "dependencies": {
         "@agarimo/cartesian": "^1.0.1",

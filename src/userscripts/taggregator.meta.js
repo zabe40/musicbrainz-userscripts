@@ -1,4 +1,8 @@
 import { cartesian} from '@agarimo/cartesian';
+import { directoryImport } from 'directory-import';
+
+const importedModules = directoryImport("../taggregator-modules");
+
 /** @type {import('@kellnerd/userscript-bundler').EnhancedUserscriptMetadata} */
 const metadata = {
     name: 'MusicBrainz Taggregator',
@@ -11,6 +15,11 @@ const metadata = {
     match: cartesian(['*://*.musicbrainz.',['org','eu'],['', '/release', '/release-group','/artist','/work','/recording'], '/*'])
         .map((array)=>{return array.join("");}),
     grant: ['GM_xmlhttpRequest','GM_getValue','GM_setValue'],
+    connect: Object.values(importedModules).map((module) => {
+        let domain;
+        Object.values(module).forEach((site) => domain = site.domain);
+        return domain;
+    }),
 };
 
 // TODO

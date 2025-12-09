@@ -11,6 +11,16 @@
 // @grant         GM_xmlhttpRequest
 // @grant         GM_getValue
 // @grant         GM_setValue
+// @connect       allmusic.com
+// @connect       music.apple.com
+// @connect       bandcamp.com
+// @connect       beatport.com
+// @connect       deezer.com
+// @connect       discogs.com
+// @connect       soundcloud.com
+// @connect       spotify.com
+// @connect       vocadb.net
+// @connect       wikidata.org
 // @match         *://*.musicbrainz.org/*
 // @match         *://*.musicbrainz.org/release/*
 // @match         *://*.musicbrainz.org/release-group/*
@@ -156,15 +166,18 @@
                            faviconClass: "discogs-favicon",};
 
   const apiUrl = "http://www.wikidata.org/wiki/Special:EntityData/";
-  const fetchOptions = {headers: {"User-Agent": "Taggregator Userscript/" + GM_info.script.version + " +" + GM_info.script.homepageURL,
-                                      "Accept": "application/json",
-                                      "Accept-Encoding": "gzip,deflate",},
-                        responseType: 'json',};
+
+  function fetchOptions (){
+      return {headers: { "User-Agent": "Taggregator Userscript/" + GM_info.script.version + " +" + GM_info.script.homepageURL,
+                         "Accept": "application/json",
+                         "Accept-Encoding": "gzip,deflate",},
+              responseType: 'json',}
+  }
 
   function fetchWikidataTags(url, entityType){
       let urlObj = new URL(url);
       let entityID = urlObj.pathname.split('/')[2];
-      return fetchURL(apiUrl + entityID, fetchOptions)
+      return fetchURL(apiUrl + entityID, fetchOptions())
           .then((json) => {
               const claims = json.response.entities[entityID].claims;
               let promises = [];
@@ -192,7 +205,7 @@
       if(cached){
           return Promise.resolve(cached);
       }else {
-          return fetchURL(apiUrl + genreID, fetchOptions)
+          return fetchURL(apiUrl + genreID, fetchOptions())
               .then((json) => {
                   const name = json.response.entities[genreID].labels.en.value;
                   GM_setValue(gmNamespace + genreID, name);
