@@ -7,7 +7,7 @@ const importedModules = directoryImport("../taggregator-modules");
 const metadata = {
     name: 'MusicBrainz Taggregator',
     namespace: 'https://github.com/zabe40',
-    version: '2025.9.18',
+    version: '2025.12.8',
     description: 'Easily submit tags from anywhere to Musicbrainz',
     author: 'zabe',
     homepage: 'https://github.com/zabe40/musicbrainz-userscripts',
