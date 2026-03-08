@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Entity Images
-// @version       2024.7.22
+// @version       2026.3.8
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Display images on Musicbrainz for artists, labels, places, and series.
