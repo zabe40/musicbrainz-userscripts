@@ -176,7 +176,7 @@ function highlightNoncanonicalLinks(){
 
 function runUserscript(){
     highlightNoncanonicalLinks();
-    const target = document.querySelector("#external-links-editor-container");
+    const target = document.querySelector("div.external-links-editor-container");
     if(target){
         const observer = new MutationObserver(function(mutations){
             mutations.forEach(function(mutation){

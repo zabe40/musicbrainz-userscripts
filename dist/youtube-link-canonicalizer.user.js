@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Youtube Link Canonicalizer
-// @version       2025.4.16
+// @version       2026.5.18
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Correct youtube @username artist links to channel IDs
@@ -350,7 +350,7 @@
 
 	function runUserscript(){
 	    highlightNoncanonicalLinks();
-	    const target = document.querySelector("#external-links-editor-container");
+	    const target = document.querySelector("div.external-links-editor-container");
 	    if(target){
 	        const observer = new MutationObserver(function(mutations){
 	            mutations.forEach(function(mutation){
