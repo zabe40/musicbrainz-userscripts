@@ -11,6 +11,8 @@ Easily submit tags on Bandcamp pages to Musicbrainz
 [![Install](https://img.shields.io/badge/Install-success.svg?style=for-the-badge&logo=tampermonkey)](dist/bandcamp-tag-importer.user.js?raw=1)
 [![Source](https://img.shields.io/badge/Source-grey.svg?style=for-the-badge&logo=github)](dist/bandcamp-tag-importer.user.js)
 
+This userscript is no longer being updated, and has been replaced by [Taggregator](https://github.com/zabe40/musicbrainz-userscripts#musicbrainz-taggregator).
+
 ### MusicBrainz Youtube Link Canonicalizer
 
 Correct youtube @username artist links to channel IDs
