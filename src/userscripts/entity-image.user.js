@@ -92,16 +92,15 @@ function samblImageURL(url){
 }
 
 function createImage(urlObject){
-    const a = document.createElement("a");
-    a.href = urlObject.href;
-    a.className = "picture";
+    const div = document.createElement("div");
+    div.className = "picture";
 
     const img = document.createElement("img");
     img.src = urlObject.src;
     img.alt = urlObject.alt || "";
 
-    a.appendChild(img);
-    return a;
+    div.appendChild(img);
+    return div;
 }
 
 function runUserscript(){
@@ -125,7 +124,7 @@ function runUserscript(){
                         if(imageIndex == -1){
                             imageIndex = 0;
                         }
-                        div.querySelectorAll("a").forEach((item, index, list) => {
+                        div.querySelectorAll(".picture").forEach((item, index, list) => {
                             item.hidden = (index != imageIndex);
                         });
                     };
