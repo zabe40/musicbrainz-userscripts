@@ -21,7 +21,8 @@ function getImageURLs(entityURL){
                 })
                 .map((relation) => {
                     return {href: relation.url.resource,
-                            isImage: ["image", "logo", "poster"].includes(relation.type)};
+                            isImage: ["image", "logo", "poster"].includes(relation.type),
+                            relationType: relation.type};
                 })
         })
         .then((urlObjArray) =>{
@@ -32,12 +33,16 @@ function getImageURLs(entityURL){
                 let url = urlObject.href;
                 if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
                     urlObject.src = await wikimediaImageURL(url);
+                    urlObject.name = "Wikimedia file"
                     urlObject.isImage = true;
                 }else if(isSAMBLable(url)){
-                    urlObject.src = await samblImageURL(url);
+                    let obj = await samblImageURL(url);
+                    urlObject.src = obj.src;
+                    urlObject.name = obj.provider + " profile";
                     urlObject.isImage = true;
                 }else if(urlObject.isImage){
                     urlObject.src = await url;
+                    urlObject.name = urlObject.relationType + " relationship";
                 }else{
                     urlObject.isImage = false;
                 }
@@ -87,7 +92,8 @@ function samblImageURL(url){
                                              + GM_info.script.homepageURL}})
         .then((response) => {
             let json = response.response;
-            return json.providerData.imageUrl;
+            return {provider: json.providerData.provider,
+                    src: json.providerData.imageUrl};
         })
 }
 
@@ -131,7 +137,7 @@ function runUserscript(){
                     select.addEventListener("change", updateImages);
                     for(const url of imageUrls){
                         const option = document.createElement("option");
-                        option.textContent = url.href;
+                        option.textContent = url.name;
                         option.value = url.src;
                         select.appendChild(option);
                     }
