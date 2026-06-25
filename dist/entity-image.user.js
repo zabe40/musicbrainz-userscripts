@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          MusicBrainz Entity Images
-// @version       2026.3.8
+// @version       2026.6.25
 // @namespace     https://github.com/zabe40
 // @author        zabe
 // @description   Display images on Musicbrainz for artists, labels, places, and series.
@@ -9,6 +9,8 @@
 // @updateURL     https://raw.github.com/zabe40/musicbrainz-userscripts/main/dist/entity-image.user.js
 // @supportURL    https://github.com/zabe40/musicbrainz-userscripts/issues
 // @grant         GM_xmlhttpRequest
+// @connect       sambl.lioncat6.com
+// @connect       api.wikimedia.org
 // @match         *://*.musicbrainz.org/artist/*
 // @match         *://*.musicbrainz.org/label/*
 // @match         *://*.musicbrainz.org/place/*
@@ -135,6 +137,14 @@
 	    });
 	}
 
+	function uniqueBy(array, key) {
+	    let seen = {};
+	    return array.filter((item) => {
+	        let k = key(item);
+	        return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+	    })
+	}
+
 	function getImageURLs(entityURL){
 	    const entity = extractEntityFromURL(entityURL);
 	    return fetchFromAPI(entity.type + "/" + entity.mbid,
@@ -142,23 +152,44 @@
 	        .then((response) => {
 	            return response.relations
 	                .filter((relation) => {
-	                    return ["image", "logo", "poster"].includes(relation.type);
+	                    return relation["target-type"] == "url";
 	                })
 	                .map((relation) => {
-	                    return relation.url.resource;
-	                });
+	                    return {href: relation.url.resource,
+	                            isImage: ["image", "logo", "poster"].includes(relation.type)};
+	                })
 	        })
-	        .then((urlArray) => {
-	            return Promise.all(urlArray.map(async (url) => {
-	                let urlObject = new Object();
-	                urlObject.href = url;
+	        .then((urlObjArray) =>{
+	            return uniqueBy(urlObjArray, (urlObj) => urlObj.href);
+	        })
+	        .then((urlObjArray) => {
+	            return Promise.allSettled(urlObjArray.map(async (urlObject) => {
+	                let url = urlObject.href;
 	                if(url.match("^https?://commons\\.wikimedia\\.org/wiki/File:")){
 	                    urlObject.src = await wikimediaImageURL(url);
-	                }else {
+	                    urlObject.isImage = true;
+	                }else if(isSAMBLable(url)){
+	                    urlObject.src = await samblImageURL(url);
+	                    urlObject.isImage = true;
+	                }else if(urlObject.isImage){
 	                    urlObject.src = await url;
+	                }else {
+	                    urlObject.isImage = false;
 	                }
 	                return urlObject;
 	            }));
+	        })
+	        .then((resultsArray) => {
+	            return resultsArray
+	                .map((result) => {
+	                    if(result.status == "fulfilled"){
+	                        return result.value;
+	                    }else {
+	                        return false;
+	                    }
+	                })
+	                .filter((urlObjOrFalse) => urlObjOrFalse)
+	                .filter((urlObj) => urlObj.isImage);
 	        });
 	}
 
@@ -172,6 +203,27 @@
 	            const json = JSON.parse(response.responseText);
 	            return json.thumbnail.url;
 	        });
+	}
+
+	function isSAMBLable(url){
+	    return url.match("^https?://open\\.spotify\\.com/artist")
+	        || url.match("^https?://www\\.deezer\\.com/artist")
+	        || url.match("^https?://tidal\\.com/artist/")
+	        || url.match("^https?://soundcloud\\.com")
+	        || url.match("^https?://open\\.qobuz\\.com/artist")
+	        || url.match("^https?://[^.]*.bandcamp.com/");
+	}
+
+	function samblImageURL(url){
+	    const apiURL = "https://sambl.lioncat6.com/api/getArtistInfo/?url=";
+	    return fetchURL(apiURL + url, {responseType: "json",
+	                                   headers: {"User-Agent": "Entity Images Userscript/"
+	                                             + GM_info.script.version + " +"
+	                                             + GM_info.script.homepageURL}})
+	        .then((response) => {
+	            let json = response.response;
+	            return json.providerData.imageUrl;
+	        })
 	}
 
 	function createImage(urlObject){
