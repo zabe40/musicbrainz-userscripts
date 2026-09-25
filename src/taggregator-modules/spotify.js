@@ -7,7 +7,7 @@ function fetchSpotifyTags(url, entity){
                                    headers: {"User-Agent": "Taggregator Userscript/"
 	                                     + GM_info.script.version + " +"
 	                                     + GM_info.script.homepageURL}})
-        .then((data) => data.response.providerData.genres);
+        .then((data) => data.response.data.providerData.genres);
 }
 
 export const spotify = { domain: "spotify.com",
